@@ -10,7 +10,9 @@ app.use('/api/hotels',require('./api/hotels'))
 app.use('/api/users',require('./api/users'))
 app.use('/api/rooms',require('./api/rooms'))
 app.use('/api/admin',require('./api/admin'))
-
+app.get('/',(req,res,next)=>{
+    res.json("hellow")
+})
 
 app.use('/uploads',express.static('uploads'))
 app.use((err,req,res,next)=>{
