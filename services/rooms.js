@@ -233,12 +233,12 @@ module.exports.updateRoomAvailability= async(req,res,next)=>{
         await Room.updateOne(
             {"roomNumbers._id":req.params.id},
             {$push:{
-                "roomNumbers.$.unavailableDates":req.body.dates
+                "roomNumbers.$.unavailableDates":req.body.date
             }},
         )
         //this {new} will make the find byId..method return the updated value
         res.status(200).json({message:'Room status has been updated'})
-        next(err) 
+        
     }
     catch(err){
         res.status(500).json(err)
@@ -562,5 +562,34 @@ module.exports.roomSearch= async(req,res,next)=>{
     }
     catch(err){
         next(err)    }
+
+}
+
+
+
+module.exports.roomInformationToBook= async(req,res,next)=>{
+    try{
+        
+       
+       let choosenRoom = await Room.findById(req.params.id,{maxPeople:1,price:1,_id:1,roomNumbers:1,type:1} )
+       
+       if(choosenRoom.type=="فندق"){
+           
+
+       }
+       else {
+        choosenRoom = await Room.findById(req.params.id,{maxPeople:1,price:1,_id:1,unavailableDates:1} )
+
+       }
+      
+
+      
+        res.status(200).json({Room:choosenRoom})
+        next()
+    }
+    
+    catch(err){
+        next(err) 
+        }
 
 }

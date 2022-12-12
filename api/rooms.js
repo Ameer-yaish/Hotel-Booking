@@ -1,6 +1,6 @@
 
 const upload = require("../middleware/upload")
-const { createRoom, updateRoom, deleteRoom, getRoom, getRooms, updateRoomAvailability, getRoomsByType, getCity, topRating, topBooking, getDataForFilter, addFeedback, roomsFilter, roomSearch } = require("../services/rooms")
+const { createRoom, updateRoom, deleteRoom, getRoom, getRooms, updateRoomAvailability, getRoomsByType, getCity, topRating, topBooking, getDataForFilter, addFeedback, roomsFilter, roomSearch, roomInformationToBook } = require("../services/rooms")
 const { verifyAdmin, verifyToken } = require("../utils/verifyToken")
 
 const app=require("express").Router()
@@ -23,6 +23,7 @@ app.get('/getDataForFilter',getDataForFilter)
 app.put('/Feedback/:id',addFeedback)
 app.get('/roomsFilter',roomsFilter)
 app.get('/roomSearch',roomSearch)
+app.get('/roomInformation/:id',roomInformationToBook)
 
 
 module.exports=app

@@ -85,10 +85,16 @@ const mongoose=require('mongoose')
    
     roomNumbers:[{
         number:{type:Number},
-        unavailableDates:{type:[Date]}
+        unavailableDates:{
+            type:[Date],
+            default:[]
+        }
     }],
+    //for houses not room in hotel
     unavailableDates:{
-        type:[Date]
+        type:[Date],
+        default:[]
+
     },
     category:{
         type:[String],

@@ -70,7 +70,12 @@ const mongoose=require('mongoose')
         default:false
 
 
-    }
+    },
+    favouritePlaces:{
+        type:[mongoose.SchemaTypes.ObjectId],
+        default:[]
+
+    },
 
 
 },{timestamps:true})

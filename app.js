@@ -5,6 +5,7 @@ const port = 3000
 mongoose.connect("mongodb+srv://ameer:ameer123@cluster0.4urwsng.mongodb.net/booking")
 app.use(express.json())
 const cookieParser = require('cookie-parser')
+const { array } = require('./middleware/upload')
 app.use(cookieParser())
 app.use('/api/hotels',require('./api/hotels'))
 app.use('/api/users',require('./api/users'))
@@ -26,6 +27,8 @@ app.use((err,req,res,next)=>{
     })
 
 })
+
+     
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 

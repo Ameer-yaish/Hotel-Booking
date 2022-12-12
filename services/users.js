@@ -11,7 +11,11 @@ const topDestinationModel = require('../models/topDestination');
 const  helpTopicModel  = require('../models/helpTopic');
 const  conversationModel  = require('../models/conversation');
 const  messageModel  = require('../models/message');
-
+const  roomModel  = require('../models/room');
+const  hotelModel  = require('../models/hotel');
+const { Console } = require('console');
+const { array } = require('../middleware/upload');
+const  paypal = require('paypal-rest-sdk');
 const transporter =nodemailer.createTransport({
     service:'gmail',
     auth:{
@@ -234,6 +238,7 @@ module.exports.addUserCategories= async(req,res,next)=>{
 }
 
 
+
 module.exports.getUserCategories= async(req,res,next)=>{
    
     try{
@@ -434,3 +439,219 @@ module.exports.getMessages= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.updateFavouritePlaces= async(req,res,next)=>{
+    try{
+        const{userId,placeId}=req.body
+  
+       const userWanted=await userModel.findOne({_id:userId})
+       let foundOrNot=false
+     
+       favouritePlaces=userWanted.favouritePlaces
+       for(let i=0;i<favouritePlaces.length;i++){
+         
+        
+        if(favouritePlaces[i].equals(placeId)){
+            foundOrNot=true
+           }
+           else foundOrNot= false
+     
+       }
+       
+     
+       if(foundOrNot){
+       await userModel.findByIdAndUpdate(userId,{ $pull:{favouritePlaces:placeId}})
+
+        res.status(200).json("sucssfully removed")
+
+       }
+       else{
+       await userModel.findByIdAndUpdate(userId,{ $push:{favouritePlaces:placeId}})
+        res.status(200).json("sucssfully added")
+       }
+        
+
+
+
+
+      
+    
+    }
+    
+    catch(err){
+        next(err)    }
+
+}
+module.exports.getFavouritePlaces= async(req,res,next)=>{
+   
+    try{
+        let userfavouritePlaces=[]
+     const User=await userModel.findOne({_id:req.params.id})
+     favouritePlaces=User.favouritePlaces
+           await Promise.all(favouritePlaces.map(async favouritePlace=>{
+            userfavouritePlaces.push(await roomModel.findOne({_id:favouritePlace},{__v:0,updatedAt:0,createdAt:0,feedbacks:0,roomNumbers:0,bookingNumber:0,featured:0,features:0,category:0,unavailableDates:0}))   
+            userfavouritePlaces.push(await hotelModel.findOne({_id:favouritePlace},{rooms:0,__v:0}))           
+        }))
+        var filtered = userfavouritePlaces.filter(function (el) {
+            return el != null;
+          });
+        
+        res.status(200).json({favouritePlaces:filtered})
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+
+
+module.exports.sendEmail= async(req,res,next)=>{
+   
+    try{
+        
+        let mailOption={
+            from:req.body.email,
+            to:"ameeryaish47@gmail.com",
+            subject:`Message from ${req.body.email}:${req.body.subject}`,
+            text:req.body.message
+        }
+
+        //sending email
+        transporter.sendMail(mailOption,function(err,info){
+            if(err){
+                res.json({message:err})
+            }
+            else{
+                res.json({message:"email send successfully"})
+            }
+        })
+        
+       
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.pay= async(req,res,next)=>{
+   
+    try{
+        
+        paypal.configure({
+            'mode': 'sandbox', //sandbox or live
+            'client_id': 'AZrqqtSd2DsCY8bKwD9Y9pFPHv4lir8C8si6UgcMaiQ55DNVIm0DwI_rxcHrmAgWWj8otVudLRJiGYcM',
+            'client_secret': 'EGXsOjWM2X2D9nHN06Qs4hTDeHw_b5IbICwQCI262IdFLwspzQT3cU-aYR2HRZ8dnvND0c4YThgBl2HB'
+          });
+
+
+
+
+
+
+          var create_payment_json = {
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": "http://localhost:3000/api/users/success",
+                "cancel_url": "http://cancel.url"
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": [{
+                        "name": "item",
+                        "sku": "item",
+                        "price": "100.00",
+                        "currency": "USD",
+                        "quantity": 1
+                    }]
+                },
+                "amount": {
+                    "currency": "USD",
+                    "total": "100.00"
+                },
+                "description": "This is the payment description."
+            }]
+        };
+        
+
+        
+        
+        paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+                throw error;
+            } else {
+                console.log("Create Payment Response");
+                console.log(payment);
+                for (var index = 0; index < payment.links.length; index++) {
+                    //Redirect user to this endpoint for redirect url
+                        if (payment.links[index].rel === 'approval_url') {
+                            res.redirect(payment.links[index].href);
+                        }
+                    }
+                    
+            }
+        });
+
+
+       
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+module.exports.executePaymant= async(req,res,next)=>{
+   
+    try{
+        
+        var execute_payment_json = {
+            "payer_id": req.query.PayerID,
+            "transactions": [{
+                "amount": {
+                    "currency": "USD",
+                    "total": "100.00"
+                }
+            }]
+        };
+        
+        var paymentId = req.query.paymentId;
+        
+        paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+            if (error) {
+                console.log(error.response);
+                throw error;
+            } else {
+                console.log("Get Payment Response");
+                console.log(JSON.stringify(payment));
+            }
+        });
+
+
+       
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+
