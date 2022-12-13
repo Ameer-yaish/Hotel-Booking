@@ -230,14 +230,25 @@ module.exports.getRoomsByType= async(req,res,next)=>{
 
 module.exports.updateRoomAvailability= async(req,res,next)=>{
     try{
-        await Room.updateOne(
-            {"roomNumbers._id":req.params.id},
-            {$push:{
-                "roomNumbers.$.unavailableDates":req.body.date
-            }},
-        )
-        //this {new} will make the find byId..method return the updated value
-        res.status(200).json({message:'Room status has been updated'})
+        const choosenRoom=await Room.findByIdAndUpdate(req.params.id,{$push:{unavailableDates:req.body.dates}})
+
+
+          if(choosenRoom){
+            res.status(200).json({message:'Room status has been updated'})
+          }
+          else{
+            await Room.updateOne(
+                {"roomNumbers._id":req.params.id},
+                {$push:{
+                    "roomNumbers.$.unavailableDates":req.body.dates
+                }},
+            )
+            res.status(200).json({message:'Room status has been updated'})
+
+          }
+        
+        
+        
         
     }
     catch(err){
@@ -474,7 +485,7 @@ const theHotel=await Hotel.findOne({_id:hotelID})
      const  upRoom=await Room.findByIdAndUpdate(updatedRoom._id,{averageRating:rate(Roomrating)},{new :true})
           Roomrating.length = 0
          
-console.log(theHotel._id)
+
            const uphotel=await Hotel.findByIdAndUpdate(theHotel._id,{rating:rate(Hotelrating)},{new :true})
           Hotelrating.length = 0
 
@@ -578,7 +589,7 @@ module.exports.roomInformationToBook= async(req,res,next)=>{
 
        }
        else {
-        choosenRoom = await Room.findById(req.params.id,{maxPeople:1,price:1,_id:1,unavailableDates:1} )
+        choosenRoom = await Room.findById(req.params.id,{maxPeople:1,price:1,_id:1,unavailableDates:1,type:1} )
 
        }
       

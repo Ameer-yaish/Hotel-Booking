@@ -66,8 +66,12 @@ const mongoose=require('mongoose')
 featured:{
     type:Number,
     default:0
-}
+},
 
+category:{
+    type:[String],
+    
+},
 
 })
 
