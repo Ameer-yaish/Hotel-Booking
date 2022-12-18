@@ -64,7 +64,19 @@ const mongoose=require('mongoose')
         type:[String],
         
     },
-    
+    wantToBeOwner:{
+        type:Boolean,
+        default:false
+
+
+    },
+    isOwner:{
+        type:Boolean,
+        default:false
+
+
+    },
+
     isAdmin:{
         type:Boolean,
         default:false

@@ -100,6 +100,11 @@ const mongoose=require('mongoose')
         type:[String],
         
     },
+    disCount:{
+        type:Number,
+        default:0
+    },
+   
     
 
 },{timestamps:true})

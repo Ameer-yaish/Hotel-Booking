@@ -1,5 +1,5 @@
 const upload = require("../middleware/upload")
-const { register, login, newUser, updateUser, deleteUser, getUser, getUsers, verifyEmail, resetPassword, addUserCategories,getUserCategories, sendOTPVerificationEmail, addTopDestination, changePassword, getUserInformation, helpQuestionSearch,conversation, getUserConversations, newMessage, getMessages, updateFavouritePlaces, getFavouritePlaces, sendEmail, pay, executePaymant } = require("../services/users")
+const { register, login, newUser, updateUser, deleteUser, getUser, getUsers, verifyEmail, resetPassword, addUserCategories,getUserCategories, sendOTPVerificationEmail, addTopDestination, changePassword, getUserInformation, helpQuestionSearch,conversation, getUserConversations, newMessage, getMessages, updateFavouritePlaces, getFavouritePlaces, sendEmail, pay, executePaymant, ownerRegister } = require("../services/users")
 const { verifyUser, verifyAdmin ,EmailIsVerified, verifyToken, verifyOTP} = require("../utils/verifyToken")
 const { userValidation } = require("../validation/user.validation")
 var paypal = require('paypal-rest-sdk');
@@ -10,6 +10,7 @@ const app=require("express").Router()
 
 
 app.post('/auth/register',userValidation,register)
+app.post('/auth/owner/register',userValidation,ownerRegister)
 app.post('/auth/login',EmailIsVerified,login)
 app.post('/messages',newMessage)
 app.post('/sendEmail',sendEmail)

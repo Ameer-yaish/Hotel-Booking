@@ -5,6 +5,7 @@ const hotelTypes = require('../models/hotelTypes')
 const path=require('path')
 const topDestinationModel=require('../models/topDestination')
 const helpTopicModel = require('../models/helpTopic')
+const featuresModel = require('../models/feature')
 
 
 module.exports.addCategories=async(req,res,next)=>{
@@ -105,6 +106,7 @@ module.exports.addCity= async(req,res,next)=>{
 
 
 
+
 module.exports.addHelpTopic= async(req,res,next)=>{
     try{
       const  {helpTopic }=req.body
@@ -179,4 +181,27 @@ module.exports.getHelpQuestions= async(req,res,next)=>{
 
 }
 
+module.exports.addFeature= async(req,res,next)=>{
+    try{
+      const  {featureName}=req.body
+      
+      const feature=await featuresModel.findOne({name:featureName})
+      if(feature){
+          
+          res.json({error:"feature name is exist try another one"})
+
+
+      }
+      else{
+        await featuresModel.insertMany({name:featureName})
+        res.status(200).json({message:"feature  add successfully"})
+      }
+      
+           
+           
+       }
+       catch(err){
+           next(err)    }
+
+}
 

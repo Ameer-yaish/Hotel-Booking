@@ -42,7 +42,7 @@ module.exports.createRoom=async(req,res,next)=>{
      }
      
 
-  
+
 
 
     req.body.features=JSON.parse(req.body.features)
@@ -52,7 +52,7 @@ module.exports.createRoom=async(req,res,next)=>{
     
     try {
         const newRoom=new Room(req.body)
-       
+       console.log(req.files)
         if(req.files){
             let path=''
             req.files.forEach(function(files,index,arr){
@@ -71,6 +71,7 @@ module.exports.createRoom=async(req,res,next)=>{
                     $push:{rooms:savedRoom._id},
                     $set:{city:savedRoom.city}
                 })
+
 
             }else{
                 await Hotel.findByIdAndUpdate(hotelId,{

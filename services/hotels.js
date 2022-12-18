@@ -14,6 +14,14 @@ const categoriesModel = require('../models/categories')
 module.exports.newHotel= async(req,res,next)=>{
     try{
      const {imgs,...otherDetails}=req.body
+     const foundHotel=await hotel.findOne({name:req.body.name,userId:req.body.userId})
+   
+     if(foundHotel){
+        res.status(200).json({error:" name found ,please chhose another name"})
+
+
+     }
+     else{
         const newHotel=new hotel({
             ...otherDetails
             
@@ -29,6 +37,9 @@ module.exports.newHotel= async(req,res,next)=>{
 
         newHotel.save()
         res.status(200).json({message:"successfully added"})
+     }
+    
+        
     }
     catch(err){
         next(err)    }
@@ -250,7 +261,7 @@ module.exports.getCities= async(req,res,next)=>{
 
 module.exports.getCategories= async(req,res,next)=>{
     try{
-       const categories = await categoriesModel.find({})
+       const categories = await categoriesModel.find({},{__v:0,updatedAt:0,createdAt:0})
         res.status(200).json({message:categories})
         next()
     }

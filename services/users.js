@@ -80,6 +80,62 @@ module.exports.register= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.ownerRegister= async(req,res,next)=>{
+    try{
+        let{password,username,email}=req.body
+        const foundEmail= await userModel.findOne({email})
+        const foundName= await userModel.findOne({username})
+       if(foundEmail){
+         res.json({error:"email exists"})
+           }
+
+          
+           else if(foundName){
+            res.json({error:"user Name exists try another one"})
+              }
+              else{
+                bcrypt.hash(password, 4,async function(err, hash) {
+                    const user=new userModel({
+                        ...req.body,
+                        password:hash,
+                        isVerified:false,
+                        emailToken:crypto.randomBytes(64).toString('hex'),
+                        wantToBeOwner:true
+                    })
+                        const newUser=await user.save()
+
+                        
+                    let mailOption={
+                        from:"ameeryaish47@gmail.com",
+                        to:email,
+                        subject:'ameer  -verify your email',
+                        html:`<h2>${username} Thanks for registering on our site</h2>
+                        <h4>Please verify your mail to continue...</h4>
+                        <a href="http://${req.headers.host}/api/users/verify-email?token=${user.emailToken}">Verifiy your email</a>
+                        ` 
+                    }
+
+                    //sending email
+                    transporter.sendMail(mailOption,function(err,info){
+                        if(err){
+                            res.json({message:err})
+                        }
+                        else{
+                            res.json({message:"Verification email is sent to your gmail account"})
+                        }
+                    })
+                });
+                
+
+              }
+     
+       
+    }
+    catch(err){
+        next(err)    }
+
+}
+
 module.exports.verifyEmail= async(req,res,next)=>{
     try{
         const token=req.query.token
@@ -111,7 +167,7 @@ module.exports.login= async(req,res,next)=>{
 
         const token=jwt.sign({id:User._id,isAdmin:User.isAdmin},'ameer')
         const {password,isAdmin}=User._doc
-        res.cookie("access_token",token).status(200).json({message:"success",userid:User._id})
+        res.cookie("access_token",token).status(200).json({message:"success",isAdmin:User.isAdmin,phone:User.phone,city:User.city,country:User.country,email:User.email,username:User.username,isOwner:User.isOwner})
 
        }
        else{
@@ -489,7 +545,6 @@ module.exports.getFavouritePlaces= async(req,res,next)=>{
      favouritePlaces=User.favouritePlaces
            await Promise.all(favouritePlaces.map(async favouritePlace=>{
             userfavouritePlaces.push(await roomModel.findOne({_id:favouritePlace},{__v:0,updatedAt:0,createdAt:0,feedbacks:0,roomNumbers:0,bookingNumber:0,featured:0,features:0,category:0,unavailableDates:0}))   
-            userfavouritePlaces.push(await hotelModel.findOne({_id:favouritePlace},{rooms:0,__v:0}))           
         }))
         var filtered = userfavouritePlaces.filter(function (el) {
             return el != null;
