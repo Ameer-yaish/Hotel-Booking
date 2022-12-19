@@ -52,7 +52,7 @@ module.exports.createRoom=async(req,res,next)=>{
     
     try {
         const newRoom=new Room(req.body)
-       console.log(req.files)
+      
         if(req.files){
             let path=''
             req.files.forEach(function(files,index,arr){

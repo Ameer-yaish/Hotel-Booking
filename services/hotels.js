@@ -17,7 +17,7 @@ module.exports.newHotel= async(req,res,next)=>{
      const foundHotel=await hotel.findOne({name:req.body.name,userId:req.body.userId})
    
      if(foundHotel){
-        res.status(200).json({error:" name found ,please chhose another name"})
+        res.status(200).json({message:" name found ,please chhose another name"})
 
 
      }

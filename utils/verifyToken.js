@@ -132,7 +132,7 @@ else{
 }
 }
 catch(err){
-res.json({error:err.message})
+res.json({message:err.message})
 }
 
 
