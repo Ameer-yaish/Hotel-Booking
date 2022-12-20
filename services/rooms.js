@@ -325,7 +325,7 @@ module.exports.topRating= async(req,res,next)=>{
         }
        }
        const topRatingRooms =await Promise.all(topRating.id.map((room)=>{
-        return Room.findById(room,{title:1,city:1,price:1,averageRating:1})
+        return Room.findById(room,{title:1,city:1,price:1,averageRating:1,imgs:1})
     }))
 
       
