@@ -371,7 +371,7 @@ module.exports.topBooking= async(req,res,next)=>{
         }
        }
        const topBookingRooms =await Promise.all(topBooking.id.map((room)=>{
-        return Room.findById(room,{title:1,price:1,bookingNumber:1})
+        return Room.findById(room,{title:1,city:1,price:1,bookingNumber:1,imgs:1})
     }))
 
       
