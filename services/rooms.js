@@ -31,62 +31,74 @@ return rate
  
 module.exports.createRoom=async(req,res,next)=>{
     const hotelId=req.params.hotelid
-    const h= await Hotel.findOne({_id:hotelId})
-     req.body.type=h.type
-     if(h.type=="فندق"){
-         req.body.address=h.address
-         req.body.city=h.city
-         req.body.destanceFromCityCenter=h.destanceFromCityCenter
-         req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
-         req.body.category=h.category
-     }
-     
 
-
-
-
-    req.body.features=JSON.parse(req.body.features)
-    
-    
+    const foundRoom=await Room.findOne({name:req.body.name,type:req.body.type})
    
-    
-    try {
-        const newRoom=new Room(req.body)
-      
-        if(req.files){
-            let path=''
-            req.files.forEach(function(files,index,arr){
-                path=path+files.path+','
-            })
-            path=path.substring(0,path.lastIndexOf(","))
-            newRoom.imgs=path
-        } 
+    if(foundRoom){
+       res.status(200).json({message:" name found ,please choose another name"})
 
 
-
-        const savedRoom=await newRoom.save()
-        try{
-            if(savedRoom.type=="فندق"){
-                await Hotel.findByIdAndUpdate(hotelId,{
-                    $push:{rooms:savedRoom._id},
-                    $set:{city:savedRoom.city}
-                })
-
-
-            }else{
-                await Hotel.findByIdAndUpdate(hotelId,{
-                    $push:{rooms:savedRoom._id}
-                })
-            }
-            
-        } catch(err){
-            next(err)
-        }
-        res.status(200).json(savedRoom)
-
-    } catch (err){
-next(err)
     }
+    else{
+        const h= await Hotel.findOne({_id:hotelId})
+        req.body.type=h.type
+        if(h.type=="فندق"){
+            req.body.address=h.address
+            req.body.city=h.city
+            req.body.destanceFromCityCenter=h.destanceFromCityCenter
+            req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
+            req.body.category=h.category
+        }
+        
+   
+   
+   
+   
+       req.body.features=JSON.parse(req.body.features)
+       
+       
+      
+       
+       try {
+           const newRoom=new Room(req.body)
+         
+           if(req.files){
+               let path=''
+               req.files.forEach(function(files,index,arr){
+                   path=path+files.path+','
+               })
+               path=path.substring(0,path.lastIndexOf(","))
+               newRoom.imgs=path
+           } 
+   
+   
+   
+           const savedRoom=await newRoom.save()
+           try{
+               if(savedRoom.type=="فندق"){
+                   await Hotel.findByIdAndUpdate(hotelId,{
+                       $push:{rooms:savedRoom._id},
+                       $set:{city:savedRoom.city}
+                   })
+   
+   
+               }else{
+                   await Hotel.findByIdAndUpdate(hotelId,{
+                       $push:{rooms:savedRoom._id}
+                   })
+               }
+               
+           } catch(err){
+               next(err)
+           }
+           res.status(200).json(savedRoom)
+   
+       } catch (err){
+   next(err)
+       }
+    }
+
+  
 
 }
 
@@ -151,7 +163,7 @@ module.exports.getRoom= async(req,res,next)=>{
 
       const relatedRooms=await Promise.all(arr.map(async room=>{
 
-           return await Room.findById(room,{title:1,city:1,price:1,averageRating:1})
+           return await Room.findById(room,{title:1,city:1,price:1,averageRating:1,imgs:1})
        }))
        
       let hotelId
@@ -185,7 +197,7 @@ module.exports.getRoom= async(req,res,next)=>{
       });
      
 
-      const user =await userModel.findById(userHotel.userId,{phone:1,email:1,username:1})
+      const user =await userModel.findById(userHotel.userId,{phone:1,email:1,username:1,img:1})
      
         res.status(200).json({Room:choosenRoom,relatedRooms:newArr,UserContactInfo:user})
         next()

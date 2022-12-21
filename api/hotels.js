@@ -3,14 +3,13 @@ const { verifyAdmin, verifyToken } = require("../utils/verifyToken")
 
 const app=require("express").Router()
 const upload = require("../middleware/upload")
-const { newHotelValidation } = require("../validation/newHotel.validation")
 
 
 
 
 
 
-app.post('/newHotel',upload.array('imgs[]'),newHotelValidation,newHotel)
+app.post('/newHotel',upload.array('imgs[]'),newHotel)
 
 app.put('/updateHotel/:id',verifyToken,verifyAdmin,updateHotel)
 app.delete('/deleteHotel/:id',verifyToken,verifyAdmin,deleteHotel)

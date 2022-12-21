@@ -15,8 +15,16 @@ module.exports.newHotel= async(req,res,next)=>{
     try{
      const {imgs,...otherDetails}=req.body
      const foundHotel=await hotel.findOne({name:req.body.name,userId:req.body.userId})
-   
-     if(foundHotel){
+   if(req.body.name==""){
+    res.status(200).json({message:" name is not allowed to be empty"})
+
+   }
+   else if(req.body.type==""){
+    res.status(200).json({message:" type is not allowed to be empty"})
+
+   }
+   else{
+    if(foundHotel){
         res.status(200).json({message:" name found ,please chhose another name"})
 
 
@@ -41,6 +49,8 @@ module.exports.newHotel= async(req,res,next)=>{
     
         
     }
+   }
+    
     catch(err){
         next(err)    }
 
