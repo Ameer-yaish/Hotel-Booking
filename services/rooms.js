@@ -543,7 +543,8 @@ module.exports.roomsFilter= async(req,res,next)=>{
 module.exports.roomSearch= async(req,res,next)=>{
     try{
  
-        searchText=req.body.searchText
+      const  searchText=req.query.searchText
+        
 
        const rooms = await Room.find({
        "$or":[
