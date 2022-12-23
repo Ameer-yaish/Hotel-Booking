@@ -6,6 +6,7 @@ const topDestinationModel=require('../models/topDestination')
 const { default: mongoose } = require('mongoose')
 const { json } = require('express/lib/response')
 const { object } = require('joi')
+const room = require('../models/room')
 
 
 const rate = (rating) => {
@@ -184,7 +185,7 @@ module.exports.getRoom= async(req,res,next)=>{
         newArr.length =0
         
         await Promise.all(userHotel.rooms.map(async room=>{
-            newArr.push(await  Room.findById(room,{title:1,city:1,price:1,averageRating:1})) 
+            newArr.push(await  Room.findById(room,{title:1,city:1,price:1,averageRating:1,discount:1})) 
       }))
 
       }
@@ -616,5 +617,28 @@ module.exports.roomInformationToBook= async(req,res,next)=>{
     catch(err){
         next(err) 
         }
+
+}
+
+
+module.exports.getOffers= async(req,res,next)=>{
+    try{
+        const rooms=await Room.find({ discount: { $gt: 0 } },{title:1,city:1,price:1,averageRating:1,imgs:1,discount:1})
+
+        if(rooms.length){
+            res.status(200).json({RoomsWithOffers:rooms})
+            next()
+        }
+        else{
+            res.status(200).json({message:"no offers found"})
+
+
+        }
+        
+
+        
+    }
+    catch(err){
+        next(err)    }
 
 }

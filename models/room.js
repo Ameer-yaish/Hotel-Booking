@@ -100,7 +100,7 @@ const mongoose=require('mongoose')
         type:[String],
         
     },
-    disCount:{
+    discount:{
         type:Number,
         default:0
     },

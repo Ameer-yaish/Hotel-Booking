@@ -416,7 +416,7 @@ module.exports.changePassword= async(req,res,next)=>{
 module.exports.helpQuestionSearch= async(req,res,next)=>{
     try{
  
-        searchText=req.body.searchText
+        searchText=req.query.searchText
 
        const helpTopic = await helpTopicModel.find({
        "$or":[
