@@ -44,11 +44,12 @@ module.exports.createRoom=async(req,res,next)=>{
         const h= await Hotel.findOne({_id:hotelId})
         req.body.type=h.type
         if(h.type=="فندق"){
-            req.body.address=h.address
+         console.log(h.address)   
+            // req.body.address=h.address
             req.body.city=h.city
-            req.body.destanceFromCityCenter=h.destanceFromCityCenter
-            // req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
-            req.body.category=h.category
+            // req.body.destanceFromCityCenter=h.destanceFromCityCenter
+            //  req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
+            // req.body.category=h.category
         }
         
    
@@ -140,7 +141,6 @@ module.exports.deleteRoom= async(req,res,next)=>{
   
 module.exports.getRoom= async(req,res,next)=>{
     try{
-        
        
        const choosenRoom = await Room.findById(req.params.id,{__v:0,updatedAt:0,createdAt:0} )
 
@@ -185,17 +185,23 @@ module.exports.getRoom= async(req,res,next)=>{
         newArr.length =0
         
         await Promise.all(userHotel.rooms.map(async room=>{
-            newArr.push(await  Room.findById(room,{title:1,city:1,price:1,averageRating:1,discount:1})) 
+            newArr.push(await  Room.findById(room,{_id:1,title:1,city:1,price:1,averageRating:1,discount:1})) 
       }))
 
       }
+      
+
+
 
        newArr = relatedRooms.filter(object => {
+         
+          
         if(object._id.equals(choosenRoom._id))
         return 
         else
          return object._id
       });
+      
      
 
       const user =await userModel.findById(userHotel.userId,{phone:1,email:1,username:1,img:1})
