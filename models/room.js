@@ -13,31 +13,31 @@ const mongoose=require('mongoose')
 
     price:{
         type:Number,
-        required:true
+       
 
 
     },
     maxPeople:{
         type:Number,
-        required:true
+        
 
 
     },
     desc:{
         type:String,
-        required:true
+        
 
 
     },
     city:{
         type:String,
-        required:true
+     
 
 
     },
     address:{
         type:String,
-        required:true
+       
 
 
     },

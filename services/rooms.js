@@ -44,7 +44,7 @@ module.exports.createRoom=async(req,res,next)=>{
         const h= await Hotel.findOne({_id:hotelId})
         req.body.type=h.type
         if(h.type=="فندق"){
-         console.log(h.address)   
+           
             // req.body.address=h.address
             req.body.city=h.city
             // req.body.destanceFromCityCenter=h.destanceFromCityCenter
@@ -54,6 +54,7 @@ module.exports.createRoom=async(req,res,next)=>{
         
    
    
+
    
    
     //    req.body.features=JSON.parse(req.body.features)
