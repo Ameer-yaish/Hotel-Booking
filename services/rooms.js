@@ -60,6 +60,7 @@ module.exports.createRoom=async(req,res,next)=>{
     //    req.body.features=JSON.parse(req.body.features)
        
        
+    
       
        
        try {
@@ -229,14 +230,23 @@ module.exports.getRoomsByType= async(req,res,next)=>{
         }
         
         else{
+            const array=[]
             const hotels = await Hotel.find({type})
              const Rooms = await Promise.all(hotels.map(async hotel=>{ 
              return await Promise.all(hotel.rooms.map(roomId=>{
             return Room.findById(roomId,{featured:1,photos:1,desc:1,city:1,price:1,title:1,averageRating:1,featured:1,imgs:1})
+       
+        
         })) 
         
        }))
-       res.status(200).json({message:Rooms})
+
+       for(let i=0;i<Rooms.length;i++){
+            for(let j=0;j<Rooms[i].length;j++){
+                array.push(Rooms[i][j])
+            }
+    }
+       res.status(200).json({message:array})
         next()
 }
        
