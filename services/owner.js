@@ -184,7 +184,7 @@ module.exports.getSeriesInformation= async(req,res,next)=>{
 module.exports.getPlace= async(req,res,next)=>{
     try{
         const id=req.params.id
-        const wantedRoom = await Room.findById(id,{feedbacks:1,imgs:1,features:1,disCount:1,averageRating:1,desc:1,maxPeople:1,price:1,title:1,city:1,type:1,destanceFromCityCenter:1,address:1,bookingNumber:1})
+        const wantedRoom = await Room.findById(id,{feedbacks:1,imgs:1,features:1,disCount:1,averageRating:1,desc:1,maxPeople:1,price:1,title:1,city:1,type:1,destanceFromCityCenter:1,address:1,bookingNumber:1,unavailableDates:1})
       
 
         res.status(200).json({place:wantedRoom})
