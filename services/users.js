@@ -13,9 +13,11 @@ const  conversationModel  = require('../models/conversation');
 const  messageModel  = require('../models/message');
 const  roomModel  = require('../models/room');
 const  hotelModel  = require('../models/hotel');
+const  paymentModel  = require('../models/payment');
 const { Console } = require('console');
 const { array } = require('../middleware/upload');
 const  paypal = require('paypal-rest-sdk');
+
 const transporter =nodemailer.createTransport({
     service:'gmail',
     auth:{
@@ -596,8 +598,8 @@ module.exports.sendEmail= async(req,res,next)=>{
         next(err)    }
 
 }
-
-module.exports.pay= async(req,res,next)=>{
+let price;
+module.exports.placePay= async(req,res,next)=>{
    
     try{
         
@@ -607,7 +609,10 @@ module.exports.pay= async(req,res,next)=>{
             'client_secret': 'EGXsOjWM2X2D9nHN06Qs4hTDeHw_b5IbICwQCI262IdFLwspzQT3cU-aYR2HRZ8dnvND0c4YThgBl2HB'
           });
 
+          price=req.query.price
+          price=((price*20)/100).toString()
 
+console.log(price)
 
 
 
@@ -626,14 +631,14 @@ module.exports.pay= async(req,res,next)=>{
                     "items": [{
                         "name": "item",
                         "sku": "item",
-                        "price": "100.00",
+                        "price": price,
                         "currency": "USD",
                         "quantity": 1
                     }]
                 },
                 "amount": {
                     "currency": "USD",
-                    "total": "100.00"
+                    "total": price
                 },
                 "description": "This is the payment description."
             }]
@@ -673,13 +678,14 @@ module.exports.pay= async(req,res,next)=>{
 module.exports.executePaymant= async(req,res,next)=>{
    
     try{
+        console.log(price)
         
         var execute_payment_json = {
             "payer_id": req.query.PayerID,
             "transactions": [{
                 "amount": {
                     "currency": "USD",
-                    "total": "100.00"
+                    "total": price
                 }
             }]
         };
@@ -695,6 +701,7 @@ module.exports.executePaymant= async(req,res,next)=>{
                 console.log(JSON.stringify(payment));
             }
         });
+        res.redirect("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-9E155724U4002970B#/checkout/genericError?code=UEFZTUVOVF9BTFJFQURZX0RPTkU%3D")
 
 
        
@@ -708,5 +715,155 @@ module.exports.executePaymant= async(req,res,next)=>{
         next(err)    }
 
 }
+
+
+
+
+module.exports.Roompay= async(req,res,next)=>{
+   
+    try{
+        
+        paypal.configure({
+            'mode': 'sandbox', //sandbox or live
+            'client_id': 'AZrqqtSd2DsCY8bKwD9Y9pFPHv4lir8C8si6UgcMaiQ55DNVIm0DwI_rxcHrmAgWWj8otVudLRJiGYcM',
+            'client_secret': 'EGXsOjWM2X2D9nHN06Qs4hTDeHw_b5IbICwQCI262IdFLwspzQT3cU-aYR2HRZ8dnvND0c4YThgBl2HB'
+          });
+
+         let Roomprice=req.query.price
+         Roomprice=((Roomprice*20)/100).toString()
+          roomId=req.query.roomId
+          userId=req.query.userId
+
+
+
+
+
+          var create_payment_json = {
+            "intent": "sale",
+            "payer": {
+                "payment_method": "paypal"
+            },
+            "redirect_urls": {
+                "return_url": `http://localhost:3000/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
+                "cancel_url": "http://cancel.url"
+            },
+            "transactions": [{
+                "item_list": {
+                    "items": [{
+                        "name": "item",
+                        "sku": "item",
+                        "price": Roomprice,
+                        "currency": "USD",
+                        "quantity": 1
+                    }]
+                },
+                "amount": {
+                    "currency": "USD",
+                    "total": Roomprice
+                },
+                "description": "This is the payment description."
+            }]
+        };
+        
+
+        
+        
+        paypal.payment.create(create_payment_json, function (error, payment) {
+            if (error) {
+                throw error;
+            } else {
+                console.log("Create Payment Response");
+                console.log(payment);
+                for (var index = 0; index < payment.links.length; index++) {
+                    //Redirect user to this endpoint for redirect url
+                        if (payment.links[index].rel === 'approval_url') {
+                            res.redirect(payment.links[index].href);
+                        }
+                    }
+                    
+            }
+        });
+
+
+       
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.savePayment= async(req,res,next)=>{
+   
+    try{
+       const  {userId,roomId,paymentId,PayerID,price}=req.query
+       console.log(price)
+        await paymentModel.insertMany({userId,roomId,paymentId,PayerID,price})
+        res.json("if you dont attend we will deducted 20% of Room price")
+
+       
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+module.exports.RoomexecutePaymant= async(req,res,next)=>{
+   
+    try{
+        
+        const {userId,roomId}=req.query
+        const payment=await paymentModel.findOne({userId:userId,roomId:roomId})
+       
+        
+        var execute_payment_json = {
+            "payer_id": payment.PayerID,
+            "transactions": [{
+                "amount": {
+                    "currency": "USD",
+                    "total": payment.price.toString()
+                }
+            }]
+        };
+    
+
+        
+
+        var paymentId = payment.paymentId;
+        
+        paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
+            if (error) {
+                console.log(error.response);
+                throw error;
+            } else {
+                console.log("Get Payment Response");
+                console.log(JSON.stringify(payment));
+            }
+        });
+
+
+       await paymentModel.findByIdAndDelete(payment._id)
+       res.json("payment Success")
+        
+    }
+
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+
 
 

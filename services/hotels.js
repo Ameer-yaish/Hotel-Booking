@@ -13,7 +13,9 @@ const categoriesModel = require('../models/categories')
 
 module.exports.newHotel= async(req,res,next)=>{
     try{
+      
      const {imgs,...otherDetails}=req.body
+    
      const foundHotel=await hotel.findOne({name:req.body.name,userId:req.body.userId})
    if(req.body.name==""){
     res.status(200).json({message:" name is not allowed to be empty"})

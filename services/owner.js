@@ -141,7 +141,7 @@ module.exports.getHotelInformation= async(req,res,next)=>{
 module.exports.getRoom= async(req,res,next)=>{
     try{
         const id=req.params.id
-        const wantedRoom = await Room.findById(id,{roomNumbers:1,feedbacks:1,imgs:1,features:1,disCount:1,averageRating:1,desc:1,maxPeople:1,price:1,title:1})
+        const wantedRoom = await Room.findById(id,{roomNumbers:1,feedbacks:1,imgs:1,features:1,disCount:1,averageRating:1,desc:1,maxPeople:1,price:1,title:1,discount:1})
       
 
         res.status(200).json({Room:wantedRoom})
