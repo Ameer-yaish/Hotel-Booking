@@ -17,6 +17,8 @@ const  paymentModel  = require('../models/payment');
 const { Console } = require('console');
 const { array } = require('../middleware/upload');
 const  paypal = require('paypal-rest-sdk');
+const haversine = require('haversine');
+const { findOne } = require('../models/hotel');
 
 const transporter =nodemailer.createTransport({
     service:'gmail',
@@ -865,6 +867,125 @@ module.exports.RoomexecutePaymant= async(req,res,next)=>{
 
 }
 
+module.exports.addAutoSearchCoordinates= async(req,res,next)=>{
+    try{
+        const{latitude,longitude,userId}=req.body
+        const address={
+            latitude:latitude,
+            longitude:longitude
+        }
+        
+      const user=await userModel.findByIdAndUpdate(userId,{address:address},{new: true})
+      if(user.address){
+          res.json({message:` added successfully and this the address you enter  ${user.address.latitude} and ${user.address.longitude}`})
+      }
+      else{
+        res.json({message:`please cheak the user ID or the value of address you enter`})
+
+      }
+
+  
+        
+
+
+
+
+
+      
+    
+    }
+    
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getNearestPlaces= async(req,res,next)=>{
+    try{
+        const locations=[]
+      const  user=await userModel.findOne({_id:req.query.userId})
+       const places=await roomModel.find({'type': {$nin : "فندق"}})
+       const hotels=await hotelModel.find({type:"فندق"})
+       
+       for(let i=0;i<places.length;i++){
+        locations.push(places[i].address)
+       }
+       for(let i=0;i<hotels.length;i++){
+           
+        locations.push(hotels[i].address)
+       
+      }
+      
+    
+      
+
+        if(user.address)
+        {
+            const currentLocation = {
+                latitude: user.address.latitude,
+                longitude: user.address.longitude
+              };
+             
+              
+              
+              
+              // Find the nearest locations within a certain radius
+              const nearestLocations = locations.filter(location => {
+                
+                const distance = haversine(currentLocation, location);
+                return distance <= 2; // Only return locations within 1 km
+              });
+              const idPlaces=[]
+              
+              nearestLocations.forEach(location => {
+                idPlaces.push(location.placeId)
+              });
+              
+              const nearestHotels=await Promise.all(idPlaces.map(async place=>{
+                  
+
+                return await hotelModel.findOne({_id:place,category:req.query.category},{name:1,city:1,destanceFromCityCenter:1,rating:1,imgs:1,category:1})
+            }))
+            const nearestPlaces=await Promise.all(idPlaces.map(async place=>{
+               
+
+              return await roomModel.findOne({_id:place,category:req.query.category},{title:1,city:1,price:1,averageRating:1,imgs:1,category:1})
+          }))
+          var nearestHotelsFilterd = nearestHotels.filter(function (el) {
+            return el != null;
+          });
+          var nearestPlacesFiltered = nearestPlaces.filter(function (el) {
+            return el != null;
+          });
+           
+            res.json({NearestPlaces:nearestPlacesFiltered,NearestHotels:nearestHotelsFilterd})
+            
+
+
+
+        } else{
+            res.json({message:"there is no currentLocation for this user please enter one "})
+
+
+        }
+        
+     
+
+      
+        
+
+
+
+
+
+      
+    
+    }
+    
+    catch(err){
+        next(err)    }
+
+}
 
 
 

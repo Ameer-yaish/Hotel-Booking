@@ -42,14 +42,17 @@ module.exports.createRoom=async(req,res,next)=>{
     }
     else{
         const h= await Hotel.findOne({_id:hotelId})
+        
         req.body.type=h.type
+       
         if(h.type=="فندق"){
            
-            // req.body.address=h.address
+       
+          
             req.body.city=h.city
-            // req.body.destanceFromCityCenter=h.destanceFromCityCenter
-            //  req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
-            // req.body.category=h.category
+             req.body.destanceFromCityCenter=h.destanceFromCityCenter
+              req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
+             req.body.category=h.category
         }
         
    
@@ -57,13 +60,14 @@ module.exports.createRoom=async(req,res,next)=>{
 
    
    
-    //    req.body.features=JSON.parse(req.body.features)
+       
        
        
     
       
        
        try {
+           
            const newRoom=new Room(req.body)
          
            if(req.files){
@@ -74,6 +78,22 @@ module.exports.createRoom=async(req,res,next)=>{
                path=path.substring(0,path.lastIndexOf(","))
                newRoom.imgs=path
            } 
+           if(h.type=="فندق"){
+            
+            newRoom.address=h.address
+
+           }
+           else{
+            const address={
+                placeId:newRoom._id,
+                latitude:req.body.latitude,
+                longitude:req.body.longitude
+            }
+            newRoom.address=address
+           }
+           
+          
+
    
    
    

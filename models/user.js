@@ -88,6 +88,9 @@ const mongoose=require('mongoose')
         default:[]
 
     },
+    address:{
+        type:{longitude:Number,latitude:Number}
+    }
 
 
 },{timestamps:true})

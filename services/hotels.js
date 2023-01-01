@@ -44,6 +44,12 @@ module.exports.newHotel= async(req,res,next)=>{
             path=path.substring(0,path.lastIndexOf(","))
             newHotel.imgs=path
         } 
+        const address={
+            placeId:newHotel._id,
+            latitude:req.body.latitude,
+            longitude:req.body.longitude
+        }
+        newHotel.address=address
 
         newHotel.save()
         res.status(200).json({message:"successfully added"})

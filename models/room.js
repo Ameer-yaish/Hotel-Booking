@@ -36,10 +36,12 @@ const mongoose=require('mongoose')
 
     },
     address:{
-        type:String,
-       
-
-
+        
+        type:{
+            placeId:mongoose.SchemaTypes.ObjectId,
+            longitude:Number,
+            latitude:Number
+        }
     },
     imgs:{
         type:String
