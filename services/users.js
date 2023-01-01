@@ -611,7 +611,7 @@ module.exports.placePay= async(req,res,next)=>{
 
           price=req.query.price
           price=((price*20)/100).toString()
-
+console.log("1")
 console.log(price)
 
 
@@ -623,7 +623,7 @@ console.log(price)
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": "http://localhost:3000/api/users/success",
+                "return_url": "http://hotel-booking-8qw1.onrender.com/api/users/success",
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
@@ -644,7 +644,7 @@ console.log(price)
             }]
         };
         
-
+console.log(price)
         
         
         paypal.payment.create(create_payment_json, function (error, payment) {
@@ -678,7 +678,7 @@ console.log(price)
 module.exports.executePaymant= async(req,res,next)=>{
    
     try{
-        console.log(price)
+        
         
         var execute_payment_json = {
             "payer_id": req.query.PayerID,
@@ -744,7 +744,7 @@ module.exports.Roompay= async(req,res,next)=>{
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": `http://localhost:3000/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
+                "return_url": `http://hotel-booking-8qw1.onrender.com/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
@@ -783,6 +783,7 @@ module.exports.Roompay= async(req,res,next)=>{
                     
             }
         });
+
 
 
        
