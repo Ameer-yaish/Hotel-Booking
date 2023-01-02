@@ -90,6 +90,9 @@ const mongoose=require('mongoose')
     },
     address:{
         type:{longitude:Number,latitude:Number}
+    },
+    userLocation:{
+        type:{longitude:Number,latitude:Number}
     }
 
 

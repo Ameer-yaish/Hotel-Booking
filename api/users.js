@@ -1,5 +1,5 @@
 const upload = require("../middleware/upload")
-const { register, login, newUser, updateUser, deleteUser, getUser, getUsers, verifyEmail, resetPassword, addUserCategories,getUserCategories, sendOTPVerificationEmail, addTopDestination, changePassword, getUserInformation, helpQuestionSearch,conversation, getUserConversations, newMessage, getMessages, updateFavouritePlaces, getFavouritePlaces, sendEmail, placePay, executePaymant, ownerRegister, savePayment, Roompay, RoomexecutePaymant, addAutoSearchCoordinates, getNearestPlaces } = require("../services/users")
+const { register, login, newUser, updateUser, deleteUser, getUser, getUsers, verifyEmail, resetPassword, addUserCategories,getUserCategories, sendOTPVerificationEmail, addTopDestination, changePassword, getUserInformation, helpQuestionSearch,conversation, getUserConversations, newMessage, getMessages, updateFavouritePlaces, getFavouritePlaces, sendEmail, placePay, executePaymant, ownerRegister, savePayment, Roompay, RoomexecutePaymant, addAutoSearchCoordinates, getNearestPlaces, addUserLocation, getUserLocation } = require("../services/users")
 const { verifyUser, verifyAdmin ,EmailIsVerified, verifyToken, verifyOTP} = require("../utils/verifyToken")
 const { userValidation } = require("../validation/user.validation")
 var paypal = require('paypal-rest-sdk');
@@ -48,8 +48,10 @@ app.get('/Roompay',Roompay)
 app.get('/savePayment',savePayment)
 app.get('/RoomexecutePaymant',RoomexecutePaymant)
 app.get('/nearestPlaces',getNearestPlaces)
+app.get('/userLocation/:id',getUserLocation)
 
 app.put('/coordinates',addAutoSearchCoordinates)
+app.put('/userLocation',addUserLocation)
 
 app.get('/emailVerifiedPage',(req,res)=>{
     res.json("Email verified You Can Sign in now")

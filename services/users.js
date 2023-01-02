@@ -988,4 +988,65 @@ module.exports.getNearestPlaces= async(req,res,next)=>{
 }
 
 
+module.exports.addUserLocation= async(req,res,next)=>{
+    try{
+        const{latitude,longitude,userId}=req.body
+        const userLocation={
+            latitude:latitude,
+            longitude:longitude
+        }
+        
+      const user=await userModel.findByIdAndUpdate(userId,{userLocation:userLocation},{new: true})
+      if(user.userLocation){
+          res.json({message:` added successfully and this the user Location you enter  ${user.userLocation.latitude} and ${user.userLocation.longitude}`})
+      }
+      else{
+        res.json({message:`please cheak the user ID or the value of address you enter`})
+
+      }
+
+  
+        
+
+
+
+
+
+      
+    
+    }
+    
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getUserLocation= async(req,res,next)=>{
+   
+    try{
+       const userId=req.params.id
+       const user= await userModel.findById(userId)
+       if(user){
+        res.status(200).json({latitude:user.userLocation.latitude,longitude:user.userLocation.longitude})
+
+       }
+       else{
+        res.status(200).json({message:"user not found "})
+
+       }
+        
+        
+        
+    }
+
+
+
+    
+    catch(err){
+        next(err)    }
+
+}
+
+
+
 
