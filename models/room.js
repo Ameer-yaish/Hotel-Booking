@@ -88,13 +88,13 @@ const mongoose=require('mongoose')
     roomNumbers:[{
         number:{type:Number},
         unavailableDates:{
-            type:[Date],
+            type:[String],
             default:[]
         }
     }],
     //for houses not room in hotel
     unavailableDates:{
-        type:[Date],
+        type:[String],
         default:[]
 
     },
