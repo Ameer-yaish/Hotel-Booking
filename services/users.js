@@ -504,30 +504,26 @@ module.exports.updateFavouritePlaces= async(req,res,next)=>{
         const{userId,placeId}=req.body
   
        const userWanted=await userModel.findOne({_id:userId})
-       let foundOrNot=false
+   
      
        favouritePlaces=userWanted.favouritePlaces
-       for(let i=0;i<favouritePlaces.length;i++){
-         
-        
-        if(favouritePlaces[i].equals(placeId)){
-            foundOrNot=true
-           }
-           else foundOrNot= false
-     
-       }
        
+       const id=favouritePlaces.some(id => id.equals(placeId));
      
-       if(foundOrNot){
+       
+       if(id){
        await userModel.findByIdAndUpdate(userId,{ $pull:{favouritePlaces:placeId}})
 
         res.status(200).json("sucssfully removed")
 
+
        }
        else{
+           
        await userModel.findByIdAndUpdate(userId,{ $push:{favouritePlaces:placeId}})
         res.status(200).json("sucssfully added")
        }
+       
         
 
 
