@@ -30,8 +30,8 @@ app.put('/changePassword',changePassword)
 app.put('/addUserCategories/:id',addUserCategories)
 app.put('/updatefavouritePlaces',updateFavouritePlaces)
 
-
-app.get('/getUsers',verifyToken,verifyAdmin,getUsers)
+// app.get('/getUsers',verifyToken,verifyAdmin,getUsers)
+app.get('/getUsers',getUsers)
 app.get('/verify-email',verifyEmail)
 app.get('/getUserCategories/:id',verifyToken,verifyUser,getUserCategories)
 app.get('/getfavouritePlaces/:id',getFavouritePlaces)

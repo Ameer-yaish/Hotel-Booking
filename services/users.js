@@ -247,7 +247,7 @@ module.exports.getUserInformation= async(req,res,next)=>{
 }
 module.exports.getUsers= async(req,res,next)=>{
     try{
-       const Users = await userModel.find({})
+       const Users = await userModel.find({isAdmin:{$eq:false},isOwner:{$eq:false}},{username:1,_id:1})
         res.status(200).json({message:Users})
         next()
     }
@@ -609,8 +609,7 @@ module.exports.placePay= async(req,res,next)=>{
 
           price=req.query.price
           price=((price*20)/100).toString()
-console.log("1")
-console.log(price)
+
 
 
 
@@ -642,7 +641,7 @@ console.log(price)
             }]
         };
         
-console.log(price)
+
         
         
         paypal.payment.create(create_payment_json, function (error, payment) {
