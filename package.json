@@ -23,6 +23,7 @@
     "google-translate-api": "^2.3.0",
     "haversine": "^1.1.1",
     "hbs": "^4.2.0",
+    "https": "^1.0.0",
     "joi": "^17.6.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.6.3",

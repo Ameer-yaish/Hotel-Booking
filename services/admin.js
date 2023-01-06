@@ -6,6 +6,8 @@ const path=require('path')
 const topDestinationModel=require('../models/topDestination')
 const helpTopicModel = require('../models/helpTopic')
 const featuresModel = require('../models/feature')
+const userModel = require('../models/user')
+const hotelModel = require('../models/hotel')
 
 
 module.exports.addCategories=async(req,res,next)=>{
@@ -112,7 +114,7 @@ module.exports.addHelpTopic= async(req,res,next)=>{
       const  {helpTopic }=req.body
       const topic=await helpTopicModel.findOne({topic:helpTopic})
       if(topic){
-          res.json({error:"Topic name is exist try another one"})
+          res.json({message:"Topic name is exist try another one"})
 
 
       }
@@ -139,7 +141,7 @@ module.exports.addHelpQuestion= async(req,res,next)=>{
 
       }
       else{
-        res.json({error:"Topic name dosent  exist try another one"})
+        res.json({message:"Topic name dosent  exist try another one"})
       }
       
            
@@ -188,7 +190,7 @@ module.exports.addFeature= async(req,res,next)=>{
       const feature=await featuresModel.findOne({name:featureName})
       if(feature){
           
-          res.json({error:"feature name is exist try another one"})
+          res.json({message:"feature name is exist try another one"})
 
 
       }
@@ -205,3 +207,254 @@ module.exports.addFeature= async(req,res,next)=>{
 
 }
 
+
+module.exports.getUsersCount= async(req,res,next)=>{
+    try{
+       
+      
+        const owners = await userModel.countDocuments({ isOwner: true });
+        const users = await userModel.countDocuments({ isOwner: false });
+     
+
+        res.status(200).json({Users:users,Owners:owners})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+
+module.exports.getUsersAndOwners= async(req,res,next)=>{
+    try{
+       
+      
+        const owners = await userModel.find({ isOwner: true },{email:1,phone:1,country:1,img:1,username:1,city:1});
+        const users = await userModel.find({ isOwner: false },{email:1,phone:1,country:1,img:1,username:1,city:1});
+        const usersWantsToBeOwner = await userModel.find({ wantToBeOwner: true },{email:1,phone:1,country:1,img:1,username:1,city:1});
+     
+
+        res.status(200).json({Users:users,Owners:owners,UsersWantsToBeOwner:usersWantsToBeOwner})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.makeOwner= async(req,res,next)=>{
+    try{
+      const  userId=req.params.id
+      
+      
+      const newUser=await userModel.findByIdAndUpdate(userId,{$set:{isOwner:true,wantToBeOwner:false}},{new:true})
+      if(newUser){
+        const {wantToBeOwner,_id,isOwner,username}=newUser
+          
+          res.json({message:{wantToBeOwner,_id,isOwner,username}})
+
+
+      }
+      else{
+         
+       
+        res.status(200).json({message:"user dosent updated please check if the user exist"})
+      }
+      
+           
+           
+       }
+       catch(err){
+           next(err)    }
+
+}
+module.exports.deleteCategory= async(req,res,next)=>{
+    try{
+       const catId=req.params.id
+      
+       const result = await categoriesModel.deleteOne({ _id: catId });
+       if (result.deletedCount > 0) {
+        res.json({message:'category deleted'});
+    } else {
+         res.json({message:'category not found'});
+       }
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getHotelTypes= async(req,res,next)=>{
+    try{
+       
+      
+        const types = await hotelTypes.find({},{__v:0,updatedAt:0,createdAt:0})
+              
+
+        res.status(200).json({types:types})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+module.exports.deleteHotelType= async(req,res,next)=>{
+    try{
+       const typeId=req.params.id
+      
+       const result = await hotelTypes.deleteOne({ _id: typeId });
+       if (result.deletedCount > 0) {
+        res.json({message:'type deleted'});
+    } else {
+         res.json({message:'type not found'});
+       }
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getAllCities= async(req,res,next)=>{
+    try{
+       
+      
+        const cities = await cityModel.find({},{__v:0,updatedAt:0,createdAt:0})
+
+              
+
+        res.status(200).json({cities:cities})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+module.exports.deleteCity= async(req,res,next)=>{
+    try{
+       const cityId=req.params.id
+      
+       const result = await cityModel.deleteOne({ _id: cityId });
+       if (result.deletedCount > 0) {
+        res.json({message:'city deleted'});
+    } else {
+         res.json({message:'city not found'});
+       }
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+module.exports.deleteFeature= async(req,res,next)=>{
+    try{
+       const featureId=req.params.id
+      
+       const result = await featuresModel.deleteOne({ _id: featureId });
+       if (result.deletedCount > 0) {
+        res.json({message:'feature deleted'});
+    } else {
+         res.json({message:'feature not found'});
+       }
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+module.exports.deletehelpTopic= async(req,res,next)=>{
+    try{
+       const helpTopiccId=req.params.id
+      
+       const result = await helpTopicModel.deleteOne({ _id: helpTopiccId });
+       if (result.deletedCount > 0) {
+        res.json({message:'helpTopic deleted'});
+    } else {
+         res.json({message:'helpTopic not found'});
+       }
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getHelpTopicQuestions= async(req,res,next)=>{
+    try{
+       
+      const helpTopicId=req.params.id
+        const topics = await helpTopicModel.find({_id:helpTopicId},{__v:0,updatedAt:0,createdAt:0})
+        if(topics){
+            res.status(200).json({HelpTopicQuestions:topics})
+        next()
+
+        }
+        else{
+            res.status(200).json({message:"no qustions found please add one"})
+        next()
+        }
+              
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+module.exports.deletehelpTopic= async(req,res,next)=>{
+    try{
+       const {topicId,questionId}=req.query
+     
+       const newHelpTopic= await helpTopicModel.findOneAndUpdate(
+        { _id: topicId },
+        { $pull: { helpQuestions: { _id: questionId } } },
+        { new: true }
+        
+      );
+       if(newHelpTopic){
+        res.json({message:"deleted successfuly"})
+
+       }
+       else{
+        res.json({message:"plesec check the id you enter"})
+
+       }
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getTopDestination= async(req,res,next)=>{
+    try{
+       
+      
+        const topDestination = await topDestinationModel.find({},{__v:0,updatedAt:0,createdAt:0})
+        if(topDestination){
+            res.status(200).json({topDestination:topDestination})
+        next()
+
+        }
+        else{
+            res.status(200).json({message:"no topDestination found please add one"})
+        next()
+        }
+              
+
+        
+    }
+    catch(err){
+        next(err)    }
+
+}

@@ -243,7 +243,7 @@ module.exports.getRoomsByType= async(req,res,next)=>{
         type=req.query.type.toLowerCase()
         
         if(type==="فندق"){
-            const hotels = await Hotel.find({type},{name:1,type:1,desc:1,rating:1,imgs:1,featured:1})
+            const hotels = await Hotel.find({type},{name:1,type:1,desc:1,rating:1,imgs:1,featured:1,city:1})
             res.status(200).json({message:hotels})
         next()
 
