@@ -34,6 +34,7 @@ return rate
 module.exports.createRoom=async(req,res,next)=>{
     const hotelId=req.params.hotelid
 
+
     const foundRoom=await Room.findOne({name:req.body.name,type:req.body.type})
    
     if(foundRoom){
@@ -68,8 +69,10 @@ module.exports.createRoom=async(req,res,next)=>{
       
        
        try {
+           const {features,...otherDetails}=req.body
            
-           const newRoom=new Room(req.body)
+           const newRoom=new Room(otherDetails)
+
          
            if(req.files){
                let path=''
@@ -92,13 +95,23 @@ module.exports.createRoom=async(req,res,next)=>{
             }
             newRoom.address=address
            }
-           
+     
           
+let savedRoom=await newRoom.save()
+
+let array = features.split(",");
+console.log(array)
+console.log(newRoom._id)
+  savedRoom= await Room.findByIdAndUpdate(
+    {_id:newRoom._id}, // match all documents
+    { $push: { features: { $each: array } } },{new:true} // update the arrayOfStrings field
+   
+
+  );
 
    
    
-   
-           const savedRoom=await newRoom.save()
+           
            try{
                if(savedRoom.type=="فندق"){
                    await Hotel.findByIdAndUpdate(hotelId,{
@@ -165,7 +178,13 @@ module.exports.deleteRoom= async(req,res,next)=>{
 module.exports.getRoom= async(req,res,next)=>{
     try{
        
-       const choosenRoom = await Room.findById(req.params.id,{__v:0,updatedAt:0,createdAt:0} )
+       
+        const choosenRoom = await Room.findOne({_id:req.params.id},{__v:0,updatedAt:0,createdAt:0} )
+    
+      
+      
+      
+      
 
        const hotels=await Hotel.find({type:choosenRoom.type})
        
@@ -173,6 +192,7 @@ module.exports.getRoom= async(req,res,next)=>{
            return hotel.rooms
        })
      
+
    
     let arr=[]
     for(let i=0;i<allrelatedRoomsid.length;i++){
