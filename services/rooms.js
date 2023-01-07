@@ -99,11 +99,17 @@ module.exports.createRoom=async(req,res,next)=>{
           
 let savedRoom=await newRoom.save()
 
-let array = features.split(",");
 
+ 
+ let a= JSON.parse(req.body.features)  
+ 
+ 
+ my_string = a[0]
+my_array = my_string.split(',')
+console.log(my_array)
   savedRoom= await Room.findByIdAndUpdate(
     {_id:newRoom._id}, // match all documents
-    { $push: { features: { $each: array } } },{new:true} // update the arrayOfStrings field
+    { $push: { features: { $each: my_array } } },{new:true} // update the arrayOfStrings field
    
 
   );
