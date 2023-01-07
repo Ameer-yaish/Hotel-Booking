@@ -705,4 +705,16 @@ module.exports.getOffers= async(req,res,next)=>{
 
 }
 
+module.exports.getRecommendRooms= async(req,res,next)=>{
+    try{
+     const rooms=await Room.find({},{averageRating:1,imgs:1,city:1,title:1,price:1,type:1,})
+     res.json({Rooms:rooms})
+
+        
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
 
