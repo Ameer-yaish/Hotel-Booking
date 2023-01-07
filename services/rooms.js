@@ -497,7 +497,7 @@ let typeOfAccommodation=rooms.map(room=>{
 
  typeOfAccommodation=removeDuplicates(typeOfAccommodation)
        res.status(200).json({prices:[prices[0],prices[prices.length-1]],
-        features:fet,
+        features:arr,
         destanceFromCityCenter:[destanceFromCityCenter[0],destanceFromCityCenter[destanceFromCityCenter.length-1]],
         typeOfAccommodation:typeOfAccommodation
     })
@@ -704,3 +704,5 @@ module.exports.getOffers= async(req,res,next)=>{
         next(err)    }
 
 }
+
+
