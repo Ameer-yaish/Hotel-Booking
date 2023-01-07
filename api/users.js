@@ -3,6 +3,7 @@ const { register, login, newUser, updateUser, deleteUser, getUser, getUsers, ver
 const { verifyUser, verifyAdmin ,EmailIsVerified, verifyToken, verifyOTP} = require("../utils/verifyToken")
 const { userValidation } = require("../validation/user.validation")
 var paypal = require('paypal-rest-sdk');
+var messageModel = require('../models/message');
 
 const app=require("express").Router()
 
@@ -57,6 +58,32 @@ app.get('/emailVerifiedPage',(req,res)=>{
     res.json("Email verified You Can Sign in now")
 })
 app.delete('/deleteUser/:id',verifyUser,deleteUser)
+
+
+
+
+app.post('/photo',upload.array('imgs[]'),(req,res)=>{
+    const photo=new messageModel({
+        ...req.body
+         
+         
+     })
+ 
+
+   
+      if(req.files){
+          let path=''
+          req.files.forEach(function(files,index,arr){
+              path=path+files.path+','
+          })
+          path=path.substring(0,path.lastIndexOf(","))
+          photo.imgs=path
+      }     
+  
+      photo.save()
+      res.json({reqFiles:req.files,reqBody:req.body})
+})
+
 module.exports=app
 
 

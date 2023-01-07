@@ -8,7 +8,7 @@ const mongoose=require('mongoose')
     sender:{
         type:String
     },
-    text:{
+    imgs:{
         type:String
     },
 
