@@ -171,7 +171,7 @@ module.exports.login= async(req,res,next)=>{
 
         const token=jwt.sign({id:User._id,isAdmin:User.isAdmin},'ameer')
         const {password,isAdmin}=User._doc
-        res.cookie("access_token",token).status(200).json({message:"success",userId:User._id,isAdmin:User.isAdmin,phone:User.phone,city:User.city,country:User.country,email:User.email,username:User.username,isOwner:User.isOwner})
+        res.cookie("access_token",token).status(200).json({message:"success",userId:User._id,isAdmin:User.isAdmin,phone:User.phone,city:User.city,country:User.country,email:User.email,username:User.username,isOwner:User.isOwner,access_token:token})
 
        }
        else{
