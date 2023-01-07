@@ -7,6 +7,7 @@ const { default: mongoose } = require('mongoose')
 const { json } = require('express/lib/response')
 const { object } = require('joi')
 const room = require('../models/room')
+const featuresModel = require('../models/feature')
 
 
 const rate = (rating) => {
@@ -444,6 +445,8 @@ module.exports.getDataForFilter= async(req,res,next)=>{
            
     try{
      rooms=await Room.find({})
+     const fet =await featuresModel.find({},{name:1})
+    
 
     prices= rooms.map(room=>{
          return room.price
@@ -470,9 +473,10 @@ destanceFromCityCenter.sort().reverse()
 let typeOfAccommodation=rooms.map(room=>{
     return room.type
 })
+
  typeOfAccommodation=removeDuplicates(typeOfAccommodation)
        res.status(200).json({prices:[prices[0],prices[prices.length-1]],
-        features:arr,
+        features:fet,
         destanceFromCityCenter:[destanceFromCityCenter[0],destanceFromCityCenter[destanceFromCityCenter.length-1]],
         typeOfAccommodation:typeOfAccommodation
     })
