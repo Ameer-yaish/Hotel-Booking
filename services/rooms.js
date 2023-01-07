@@ -101,15 +101,11 @@ let savedRoom=await newRoom.save()
 
 
  
- let a= JSON.parse(req.body.features)  
+ let a=JSON.parse(req.body.features)  
  
- 
- my_string = a[0]
-my_array = my_string.split(',')
-console.log(my_array)
   savedRoom= await Room.findByIdAndUpdate(
     {_id:newRoom._id}, // match all documents
-    { $push: { features: { $each: my_array } } },{new:true} // update the arrayOfStrings field
+    { $push: { features: { $each: a } } },{new:true} // update the arrayOfStrings field
    
 
   );
