@@ -53,7 +53,9 @@ module.exports.createRoom=async(req,res,next)=>{
           
             req.body.city=h.city
              req.body.destanceFromCityCenter=h.destanceFromCityCenter
-              req.body.roomNumbers=JSON.parse(req.body.roomNumbers)
+             
+                req.body.roomNumbers=req.body.roomNumbers
+           
              req.body.category=h.category
         }
         
