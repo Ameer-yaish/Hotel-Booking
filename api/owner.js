@@ -1,4 +1,4 @@
-const { getAllCities, getSeriesNames, getAllFeatures, getHotelsName, getHotelsAndSeries, getHotelInformation, getRoom, addNewRoomNumber, getPlace, getSeriesInformation, getOwnerInformation } = require("../services/owner")
+const { getAllCities, getSeriesNames, getAllFeatures, getHotelsName, getHotelsAndSeries, getHotelInformation, getRoom, addNewRoomNumber, getPlace, getSeriesInformation, getOwnerInformation, addfeedbackNotification, getfeedbackNotification } = require("../services/owner")
 const { sendNotification } = require("../services/push-notification")
 
 
@@ -16,7 +16,8 @@ const app=require("express").Router()
  app.get('/getPlace/:id',getPlace)
  app.get('/getOwnerInformation/:id',getOwnerInformation)
  app.post('/notification/',sendNotification)
-
+ app.post('/feedbackNotification/',addfeedbackNotification)
+ app.get('/feedbackNotification/',getfeedbackNotification)
 
  app.put('/NewRoomNumber/:id',addNewRoomNumber)
 module.exports=app

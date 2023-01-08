@@ -8,6 +8,7 @@ const { json } = require('express/lib/response')
 const { object } = require('joi')
 const room = require('../models/room')
 const featuresModel = require('../models/feature')
+const feedbackModel = require('../models/feedbackNotification')
 
 
 const rate = (rating) => {
@@ -567,6 +568,7 @@ const theHotel=await Hotel.findOne({_id:hotelID})
 
            const uphotel=await Hotel.findByIdAndUpdate(theHotel._id,{rating:rate(Hotelrating)},{new :true})
           Hotelrating.length = 0
+           await feedbackModel.findOneAndUpdate({roomId:req.params.id},{ratedOrNot:true})
 
         res.status(200).json({message:'the feedback added successfully'})
         

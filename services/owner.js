@@ -6,6 +6,7 @@ const hotelTypes = require('../models/hotelTypes')
 const cityModel = require('../models/city')
 const categoriesModel = require('../models/categories')
 const featuresModel = require('../models/feature')
+const feedbackModel = require('../models/feedbackNotification')
 
 module.exports.getAllCities= async(req,res,next)=>{
     try{
@@ -207,5 +208,40 @@ module.exports.getOwnerInformation= async(req,res,next)=>{
     }
     catch(err){
         next(err)     }
+
+}
+
+module.exports.addfeedbackNotification= async(req,res,next)=>{
+    try{
+        const {userId,roomId}=req.body
+          await feedbackModel.insertMany({userId,roomId,ratedOrNot:false})
+      
+
+        res.status(200).json({message:"successfully added"})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getfeedbackNotification= async(req,res,next)=>{
+    try{
+        const {userId}=req.query
+        const arrayOfNotRatedRoomsId=  await feedbackModel.find({userId:userId,ratedOrNot:false},{roomId:1})
+
+        const arrayOfNotRatedRooms=await Promise.all(arrayOfNotRatedRoomsId.map(async (room)=>{
+            
+            return  Room.findOne({_id:room.roomId},{city:1,averageRating:1,maxPeople:1,price:1,type:1,title:1})
+
+        })) 
+        
+      
+
+        res.status(200).json({message:arrayOfNotRatedRooms})
+        next()
+    }
+    catch(err){
+        next(err)    }
 
 }
