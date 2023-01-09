@@ -471,7 +471,7 @@ module.exports.getDataForFilter= async(req,res,next)=>{
     try{
      rooms=await Room.find({})
      const fet =await featuresModel.find({},{name:1})
-    
+   
 
     prices= rooms.map(room=>{
          return room.price
@@ -530,8 +530,15 @@ module.exports.addFeedback= async(req,res,next)=>{
     try{
         //this {new} will make the find byId..method return the updated value
         req.body.feedbacks.date=Date.now()
+
        let hotelID
-        let updatedRoom= await Room.findByIdAndUpdate(req.params.id,{$push:{feedbacks:req.body.feedbacks}},{new :true} )
+      const userId= req.body.feedbacks.userId
+     
+      const user=await userModel.findById(userId)
+      req.body.feedbacks.img=user.img
+    
+      
+      let updatedRoom= await Room.findByIdAndUpdate(req.params.id,{$push:{feedbacks: req.body.feedbacks}},{new :true} )
        let hotels=await Hotel.find({})
         await Promise.all(hotels.map(async hotel=>{ 
         return await Promise.all(hotel.rooms.map(roomId=>{
@@ -583,6 +590,9 @@ module.exports.roomsFilter= async(req,res,next)=>{
     try{
         const {minPrice,maxPrice,features,type,distance,title}=req.body
         city=req.body.city
+        let typeArray=type.split(",")
+        console.log(typeArray)
+        
       
        const rooms = await Room.find({
        "$and":[
@@ -590,15 +600,16 @@ module.exports.roomsFilter= async(req,res,next)=>{
              {price:{$gte:minPrice || 1,$lte:maxPrice || 9999}},
 
              {features : {$in:features} },
-             {type:type},
+             {type:{$in:typeArray} },
               {destanceFromCityCenter:{$lte:distance}},
+              
               
 
                 
        
        ]
         
-       },{averageRating:1,desc:1,_id:1,title:1,type:1,imgs:1,price:1})
+       },{averageRating:1,desc:1,_id:1,title:1,type:1,imgs:1,price:1,city:1})
         res.status(200).json({message:rooms})
         next()
     }

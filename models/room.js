@@ -51,6 +51,8 @@ const mongoose=require('mongoose')
         userId:mongoose.SchemaTypes.ObjectId,
         rating:{type:Number, min:0, max:5},
         review:String,
+        img:String,
+
         date:Date
        
     }],
