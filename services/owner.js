@@ -232,7 +232,7 @@ module.exports.getfeedbackNotification= async(req,res,next)=>{
 
         const arrayOfNotRatedRooms=await Promise.all(arrayOfNotRatedRoomsId.map(async (room)=>{
             
-            return  Room.findOne({_id:room.roomId},{city:1,averageRating:1,maxPeople:1,price:1,type:1,title:1})
+            return  Room.findOne({_id:room.roomId},{city:1,averageRating:1,maxPeople:1,price:1,type:1,title:1,imgs:1})
 
         })) 
         
