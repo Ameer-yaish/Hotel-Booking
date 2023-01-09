@@ -25,7 +25,7 @@ app.get('/conversations/:userId',getUserConversations)
 
 app.put('/sendOTPVerificationEmail',sendOTPVerificationEmail)
 app.put('/resetPassword',verifyOTP,resetPassword)
-app.put('/updateUser/:id',verifyToken,verifyUser,upload.array('imgs[]'),updateUser)
+app.put('/updateUser/:id',upload.array('imgs[]'),updateUser)
 
 app.put('/changePassword',changePassword)
 app.put('/addUserCategories/:id',addUserCategories)

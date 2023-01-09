@@ -66,10 +66,19 @@ module.exports.newHotel= async(req,res,next)=>{
 
 module.exports.updateHotel= async(req,res,next)=>{
     try{
-        //this {new} will make the find byId..method return the updated value
+        
+        console.log(req.body)
+        console.log(req.params)
+        const address={
+            longitude:req.body.longitude,
+            latitude:req.body.latitude
+        }
+       
+        
        const updatedHotel= await hotel.findByIdAndUpdate(req.params.id,{$set:req.body},{new :true} )
-        res.status(200).json({message:'Hotel updated this is thr new hotel',updatedHotel})
-        next(err) 
+        res.status(200).json({message:'Hotel updated this is the new hotell',updatedHotel})
+        
+        
     }
     catch(err){
         res.status(500).json(err)

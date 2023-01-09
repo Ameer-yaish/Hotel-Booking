@@ -11,11 +11,10 @@ const upload = require("../middleware/upload")
 
 app.post('/newHotel',upload.array('imgs[]'),newHotel)
 
-app.put('/updateHotel/:id',verifyToken,verifyAdmin,updateHotel)
-app.delete('/deleteHotel/:id',verifyToken,verifyAdmin,deleteHotel)
+app.put('/updateHotel/:id',updateHotel)
+app.delete('/deleteHotel/:id',deleteHotel)
 app.get('/getHotel/:id',getHotel)
 app.get('/getHotels',getHotels)
-
 
 app.get('/countByCity',countByCity)
 app.get('/countByType',countByType)
