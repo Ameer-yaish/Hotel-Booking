@@ -236,7 +236,8 @@ module.exports.getfeedbackNotification= async(req,res,next)=>{
 
         })) 
         
-      
+
+     
 
         res.status(200).json({message:arrayOfNotRatedRooms})
         next()
