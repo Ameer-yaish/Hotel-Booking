@@ -2,10 +2,10 @@ const mongoose=require('mongoose')
 
 
  const messageSchema= mongoose.Schema({
-    conversationId:{
+    city:{
         type:String
     },
-    sender:{
+    name:{
         type:String
     },
     imgs:{

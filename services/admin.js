@@ -15,7 +15,7 @@ module.exports.addCategories=async(req,res,next)=>{
     try{
        
             const cat=new categoriesModel({
-                name:req.body.name,
+                ...req.body
                 
             })
             if(req.files){
@@ -43,9 +43,7 @@ module.exports.addHotelType= async(req,res,next)=>{
     try{
         const {type,title,desc}=req.body
         const hotelType=new hotelTypes({
-            title:title,
-            type:type,
-            desc:desc
+            ...req.body
           
         })
        
@@ -70,7 +68,7 @@ module.exports.addHotelType= async(req,res,next)=>{
 
 module.exports.addCity= async(req,res,next)=>{
     try{
-       const {categories,name,desc}=req.body
+       const {categories,name,desc,imgs}=req.body
        const cat=categories.split(',')
        
 
@@ -79,7 +77,7 @@ module.exports.addCity= async(req,res,next)=>{
                    name:name,
                    categories:cat,
                    desc:desc,
-                   
+                   imgs
                    
                })
            

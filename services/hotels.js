@@ -33,7 +33,7 @@ module.exports.newHotel= async(req,res,next)=>{
      }
      else{
         const newHotel=new hotel({
-            ...otherDetails
+            ...req.body
             
         })
         if(req.files){

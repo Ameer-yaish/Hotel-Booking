@@ -63,22 +63,24 @@ app.delete('/deleteUser/:id',verifyUser,deleteUser)
 
 
 app.post('/photo',upload.array('imgs[]'),(req,res)=>{
+    
+    const{name,...other}=req.body
+    console.log(other)
     const photo=new messageModel({
-        ...req.body
-         
-         
+        name,
+        other
      })
  
 
    
-      if(req.files){
-          let path=''
-          req.files.forEach(function(files,index,arr){
-              path=path+files.path+','
-          })
-          path=path.substring(0,path.lastIndexOf(","))
-          photo.imgs=path
-      }     
+    //   if(req.files){
+    //       let path=''
+    //       req.files.forEach(function(files,index,arr){
+    //           path=path+files.path+','
+    //       })
+    //       path=path.substring(0,path.lastIndexOf(","))
+    //       photo.imgs=path
+    //   }     
   
       photo.save()
       res.json({reqFiles:req.files,reqBody:req.body})
