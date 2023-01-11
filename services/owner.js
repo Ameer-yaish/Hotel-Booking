@@ -7,6 +7,7 @@ const cityModel = require('../models/city')
 const categoriesModel = require('../models/categories')
 const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
+const reservationModel = require('../models/reservation')
 
 module.exports.getAllCities= async(req,res,next)=>{
     try{
@@ -246,3 +247,221 @@ module.exports.getfeedbackNotification= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.getOwnerReservations= async(req,res,next)=>{
+    try{
+        const {ownerId}=req.query
+        const arrayOfOwnerReservation=  await reservationModel.find({ownerId: { $eq: ownerId }})
+      
+      const a=  await reservationModel.aggregate([
+        {
+          $project: {
+              _id: 1,
+              ownerId: 1,
+              amount: 1,
+              __v: 1,
+              userId: 1,
+              roomId: 1
+          }
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "userId",
+            foreignField: "_id",
+            as: "user"
+          }
+        },
+        {
+          $lookup: {
+            from: "rooms",
+            localField: "roomId",
+            foreignField: "_id",
+            as: "room"
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            ownerId: 1,
+            amount: 1,
+            __v: 1,
+            user: {
+              $arrayElemAt: ["$user", 0]
+            },
+            room: {
+              $arrayElemAt: ["$room", 0]
+            }
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            ownerId: 1,
+            amount: 1,
+            __v: 1,
+            user: {
+              phone: "$user.phone",
+              city: "$user.city",
+              country: "$user.country",
+              email: "$user.email",
+              username: "$user.username",
+              _id: "$user._id"
+            },
+            room: {
+              roomNumbers: "$room.roomNumbers",
+              type: "$room.type",
+              price: "$room.price",
+              city: "$room.city",
+              title: "$room.title",
+              _id: "$room._id"
+            }
+          }
+        }
+      ])
+      
+      
+          
+
+          
+        
+
+
+     
+
+        res.status(200).json({message:a})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+module.exports.cheackIn= async(req,res,next)=>{
+    try{
+       
+          
+
+          
+        
+
+
+     
+
+        res.status(200).json({message:"a"})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+module.exports.cheackOut= async(req,res,next)=>{
+    try{
+       
+          
+
+          
+        
+
+
+     
+
+        res.status(200).json({message:"a"})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.getOwnerMainPageInformation= async(req,res,next)=>{
+    try{
+        const currentDate = new Date();
+
+        const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
+        let lastMonthProfit
+        let lastTwoMonthProfit
+        let lastThreeProfit
+       await reservationModel.aggregate([
+            {
+                $match: { 
+                    date: { 
+                        $gte: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1),
+                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProfit: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ]).then((data) => {
+            lastMonthProfit=data[0].totalProfit;
+        });
+
+        const lastTowMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 2, currentDate.getDate());
+        
+       await reservationModel.aggregate([
+            {
+                $match: { 
+                    date: { 
+                        $gte: new Date(lastTowMonth.getFullYear(), lastTowMonth.getMonth(), 1),
+                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProfit: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ]).then((data) => {
+            lastTwoMonthProfit=data[0].totalProfit;
+        });
+        
+      
+        
+        const lastThreeMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
+        
+       await reservationModel.aggregate([
+            {
+                $match: { 
+                    date: { 
+                        $gte: new Date(lastThreeMonth.getFullYear(), lastThreeMonth.getMonth(), 1),
+                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProfit: {
+                        $sum: "$amount"
+                    }
+                }
+            }
+        ]).then((data) => {
+            lastThreeProfit=data[0].totalProfit;
+        });   
+
+        
+
+
+
+     
+
+        res.status(200).json({lastMonthProfit:lastMonthProfit,lastTwoMonthProfit:lastTwoMonthProfit,lastThreeProfit:lastThreeProfit})
+        next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+

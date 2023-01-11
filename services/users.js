@@ -19,7 +19,7 @@ const { array } = require('../middleware/upload');
 const  paypal = require('paypal-rest-sdk');
 const haversine = require('haversine');
 const { findOne } = require('../models/hotel');
-
+const reservationModel=require('../models/reservation')
 const transporter =nodemailer.createTransport({
     service:'gmail',
     auth:{
@@ -609,6 +609,8 @@ module.exports.placePay= async(req,res,next)=>{
 
           price=req.query.price
           price=((price*20)/100).toString()
+          roomId=req.query.roomId
+          userId=req.query.userId
 
 
 
@@ -620,7 +622,7 @@ module.exports.placePay= async(req,res,next)=>{
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": "http://hotel-booking-8qw1.onrender.com/api/users/success",
+                "return_url": `http://localhost:3000/api/users/success?userId=${userId}&roomId=${roomId}&price=${price}`,
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
@@ -698,6 +700,31 @@ module.exports.executePaymant= async(req,res,next)=>{
                 console.log(JSON.stringify(payment));
             }
         });
+        
+        const hotels=await hotelModel.find({})
+
+        let hotelId
+        await Promise.all(hotels.map(hotel=>{
+            hotel.rooms.map(room=>{
+                if(room.equals(roomId)){
+                  
+                  hotelId= hotel._id
+                }
+  
+            })
+  
+        }))
+
+                const hotel=await hotelModel.findById(hotelId)
+     
+                
+
+
+
+        const reservation=await reservationModel.insertMany({userId:req.query.userId,roomId:req.query.roomId,amount:req.query.price,ownerId:hotel.userId})
+
+
+
         res.redirect("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-9E155724U4002970B#/checkout/genericError?code=UEFZTUVOVF9BTFJFQURZX0RPTkU%3D")
 
 
@@ -712,8 +739,6 @@ module.exports.executePaymant= async(req,res,next)=>{
         next(err)    }
 
 }
-
-
 
 
 module.exports.Roompay= async(req,res,next)=>{
@@ -735,13 +760,14 @@ module.exports.Roompay= async(req,res,next)=>{
 
 
 
+
           var create_payment_json = {
             "intent": "sale",
             "payer": {
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": `http://hotel-booking-8qw1.onrender.com/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
+                "return_url": `http://localhost:3000/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
@@ -801,6 +827,28 @@ module.exports.savePayment= async(req,res,next)=>{
        const  {userId,roomId,paymentId,PayerID,price}=req.query
        console.log(price)
         await paymentModel.insertMany({userId,roomId,paymentId,PayerID,price})
+        
+        const hotels=await hotelModel.find({})
+
+        let hotelId
+        await Promise.all(hotels.map(hotel=>{
+            hotel.rooms.map(room=>{
+                if(room.equals(roomId)){
+                  
+                  hotelId= hotel._id
+                }
+  
+            })
+  
+        }))
+
+                const hotel=await hotelModel.findById(hotelId)
+              
+
+
+
+        const reservation=await reservationModel.insertMany({userId:req.query.userId,roomId:req.query.roomId,amount:req.query.price,ownerId:hotel.userId})
+
         res.json("if you dont attend we will deducted 20% of Room price")
 
        
@@ -817,6 +865,7 @@ module.exports.savePayment= async(req,res,next)=>{
 module.exports.RoomexecutePaymant= async(req,res,next)=>{
    
     try{
+
         
         const {userId,roomId}=req.query
         const payment=await paymentModel.findOne({userId:userId,roomId:roomId})

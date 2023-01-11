@@ -9,7 +9,7 @@ const { object } = require('joi')
 const room = require('../models/room')
 const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
-
+const reservationModel=require('../models/reservation')
 
 const rate = (rating) => {
     const count = {};
@@ -307,10 +307,13 @@ module.exports.getRoomsByType= async(req,res,next)=>{
 
 module.exports.updateRoomAvailability= async(req,res,next)=>{
     try{
-        const choosenRoom=await Room.findByIdAndUpdate(req.params.id,{$push:{unavailableDates:req.body.dates}})
+        const choosenRoom=await Room.findByIdAndUpdate(req.params.id,{$push:{unavailableDates:req.body.dates},$inc: {bookingNumber: 1}})
+        // const reservation=await reservationModel.updateMany({roomId: req.params.id,userId:req.params.userId},{$set:{reservationDates:req.body.dates}})
 
 
           if(choosenRoom){
+           
+
             res.status(200).json({message:'Room status has been updated'})
           }
           else{
