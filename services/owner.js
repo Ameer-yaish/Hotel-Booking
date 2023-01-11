@@ -8,6 +8,7 @@ const categoriesModel = require('../models/categories')
 const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
 const reservationModel = require('../models/reservation')
+const mongoose=require('mongoose')
 
 module.exports.getAllCities= async(req,res,next)=>{
     try{
@@ -295,7 +296,7 @@ module.exports.getOwnerReservations= async(req,res,next)=>{
         },
         {
           $project: {
-            _id: 0,
+            _id: 1,
             ownerId: 1,
             amount: 1,
             __v: 1,
@@ -371,83 +372,146 @@ module.exports.cheackOut= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.deleteReservation= async(req,res,next)=>{
+    try{
+
+        const {_id}=req.query
+        await reservationModel.deleteOne({ _id: _id})
+        .then(result => {
+          if (result.deletedCount > 0) {
+              res.json({message:"deleted successfully"})
+          } else {
+            res.json({message:"please check the id you enter"})
+        }
+        })
+        .catch(error => console.log(error));
+       
+          
+
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
 
 module.exports.getOwnerMainPageInformation= async(req,res,next)=>{
     try{
-        const currentDate = new Date();
 
-        const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, currentDate.getDate());
+        const ownerId=req.query.ownerId
         let lastMonthProfit
         let lastTwoMonthProfit
         let lastThreeProfit
-       await reservationModel.aggregate([
+        
+
+        const currentDate = new Date();
+        const specificOwnerId=mongoose.Types.ObjectId(ownerId);
+        const lastMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth()-1, 1);
+        const thisMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+        const lastTwoMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth()-2, 1);
+        const lastThreeMonthStart = new Date(currentDate.getFullYear(), currentDate.getMonth()-3, 1);
+
+
+      await  reservationModel.aggregate([
             {
-                $match: { 
-                    date: { 
-                        $gte: new Date(lastMonth.getFullYear(), lastMonth.getMonth(), 1),
-                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
-                    }
+                $match: {
+                    date: {
+                        $gte: lastMonthStart,
+                        $lt: thisMonthStart
+                    },
+                    ownerId: specificOwnerId
                 }
             },
             {
                 $group: {
                     _id: null,
-                    totalProfit: {
-                        $sum: "$amount"
-                    }
+                    totalProfit: { $sum: "$amount" }
                 }
             }
-        ]).then((data) => {
-            lastMonthProfit=data[0].totalProfit;
+        ])
+        .then((data) => {
+            if(data.length>0) {
+                lastMonthProfit = data[0].totalProfit;
+            }else{
+                console.log("There's no data available for this owner")
+            }
+        })
+        .catch((err) => {
+            console.error(err);
         });
 
-        const lastTowMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 2, currentDate.getDate());
-        
-       await reservationModel.aggregate([
+
+
+
+        await  reservationModel.aggregate([
             {
-                $match: { 
-                    date: { 
-                        $gte: new Date(lastTowMonth.getFullYear(), lastTowMonth.getMonth(), 1),
-                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
-                    }
+                $match: {
+                    date: {
+                        $gte: lastTwoMonthStart,
+                        $lt: thisMonthStart
+                    },
+                    ownerId: specificOwnerId
                 }
             },
             {
                 $group: {
                     _id: null,
-                    totalProfit: {
-                        $sum: "$amount"
-                    }
+                    totalProfit: { $sum: "$amount" }
                 }
             }
-        ]).then((data) => {
-            lastTwoMonthProfit=data[0].totalProfit;
+        ])
+        .then((data) => {
+            if(data.length>0) {
+                 lastTwoMonthProfit = data[0].totalProfit;
+            }else{
+                console.log("There's no data available for this owner")
+            }
+        })
+        .catch((err) => {
+            console.error(err);
+        });
+
+
+
+
+
+        await  reservationModel.aggregate([
+            {
+                $match: {
+                    date: {
+                        $gte: lastThreeMonthStart,
+                        $lt: thisMonthStart
+                    },
+                    ownerId: specificOwnerId
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    totalProfit: { $sum: "$amount" }
+                }
+            }
+        ])
+        .then((data) => {
+            if(data.length>0) {
+                lastThreeProfit = data[0].totalProfit;
+            }else{
+                console.log("There's no data available for this owner")
+            }
+        })
+        .catch((err) => {
+            console.error(err);
         });
         
+       const reservationsNumber= await reservationModel.find({ownerId:ownerId}).count()
       
-        
-        const lastThreeMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 3, currentDate.getDate());
-        
-       await reservationModel.aggregate([
-            {
-                $match: { 
-                    date: { 
-                        $gte: new Date(lastThreeMonth.getFullYear(), lastThreeMonth.getMonth(), 1),
-                        $lt: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1) 
-                    }
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalProfit: {
-                        $sum: "$amount"
-                    }
-                }
-            }
-        ]).then((data) => {
-            lastThreeProfit=data[0].totalProfit;
-        });   
 
         
 
@@ -455,8 +519,59 @@ module.exports.getOwnerMainPageInformation= async(req,res,next)=>{
 
      
 
-        res.status(200).json({lastMonthProfit:lastMonthProfit,lastTwoMonthProfit:lastTwoMonthProfit,lastThreeProfit:lastThreeProfit})
+        res.status(200).json({
+            lastMonthProfit:lastMonthProfit
+            ,lastTwoMonthProfit:lastTwoMonthProfit
+            ,lastThreeMonthProfit:lastThreeProfit,
+            ReservationsNumber:reservationsNumber
+        })
         next()
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.deleteHotel= async(req,res,next)=>{
+    try{
+
+        const {hotelId}=req.query
+        const hotel =await hotelModel.findOne({ _id: hotelId})
+        const rooms=hotel.rooms
+       
+
+         // Delete the main document
+
+         await hotelModel.deleteOne({ _id: hotelId })
+          .then(async result => {
+    if (result.deletedCount > 0) {
+    // Delete the associated documents in the other collection
+   await Room.deleteMany({ _id: { $in: rooms } })
+      .then(result => {
+        if (result.deletedCount > 0) {
+            res.json({message:"the hotel and all its rooms deleted"})
+        } else {
+            res.json({message:"please check the id you entered"})
+        }
+      })
+      .catch(error => console.log(error));
+  } else {
+    console.log("No document was deleted.");
+  }
+})
+.catch(error => console.log(error));
+
+       
+          
+
+          
+        
+
+
+     
+
+       
+        
     }
     catch(err){
         next(err)    }

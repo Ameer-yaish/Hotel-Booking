@@ -458,3 +458,32 @@ module.exports.getTopDestination= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.deleteUser= async(req,res,next)=>{
+    try{
+
+        const {userId}=req.query
+        await userModel.deleteOne({ _id: userId})
+        .then(result => {
+          if (result.deletedCount > 0) {
+              res.json({message:"deleted successfully"})
+          } else {
+            res.json({message:"please check the id you enter"})
+        }
+        })
+        .catch(error => console.log(error));
+       
+          
+
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}

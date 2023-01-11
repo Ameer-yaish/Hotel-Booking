@@ -1,5 +1,6 @@
 const upload = require("../middleware/upload")
 const { addCategories, addHotelType,getAllCities, addCity, addHelpTopic, addHelpQuestion, getHelpTopics, getHelpQuestions, addFeature, getUsersCount, getUsersAndOwners, makeOwner, deleteCategory, getHotelTypes, deleteHotelType, deleteCity, deleteFeature, deletehelpTopic, getHelpTopicQuestions, getTopDestination } = require("../services/admin")
+const { deleteUser } = require("../services/admin")
 const { verifyToken, verifyAdmin } = require("../utils/verifyToken")
 
 const app=require("express").Router()
@@ -27,5 +28,5 @@ app.delete('/feature/:id',deleteFeature)
 app.delete('/helpTopic/:id',deletehelpTopic)
 app.delete('/question',deletehelpTopic)
 app.delete('/Categories/:id',deleteCategory)
-
+app.delete('/user/',deleteUser)
 module.exports=app
