@@ -622,7 +622,7 @@ module.exports.placePay= async(req,res,next)=>{
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": `http://localhost:3000/api/users/success?userId=${userId}&roomId=${roomId}&price=${price}`,
+                "return_url": `https://hotel-booking-8qw1.onrender.com/api/users/success?userId=${userId}&roomId=${roomId}&price=${price}`,
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
@@ -767,7 +767,7 @@ module.exports.Roompay= async(req,res,next)=>{
                 "payment_method": "paypal"
             },
             "redirect_urls": {
-                "return_url": `http://localhost:3000/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
+                "return_url": `https://hotel-booking-8qw1.onrender.com/api/users/savePayment?userId=${userId}&roomId=${roomId}&price=${Roomprice}`,
                 "cancel_url": "http://cancel.url"
             },
             "transactions": [{
