@@ -577,6 +577,108 @@ module.exports.deleteHotel= async(req,res,next)=>{
         next(err)    }
 
 }
+module.exports.updateHotel= async(req,res,next)=>{
+    try{
+
+        const {id}=req.params
+       
+        const hotel =await hotelModel.findByIdAndUpdate(id,{$set:{...req.body}},{new:true})
+        if(req.files){
+            let path=''
+            req.files.forEach(function(files,index,arr){
+                path=path+files.path+','
+            })
+            path=path.substring(0,path.lastIndexOf(","))
+            hotel.imgs=path
+        } 
+        hotel.save()
+   
+        if(hotel){
+            res.json({message:"successfully updated"})
+        }
+        else{
+            res.json({message:"check the id you enter"})
+
+        }
+        
 
 
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+module.exports.deleteRoom= async(req,res,next)=>{
+    try{
+
+        const {roomId}=req.query
+        await Room.deleteOne({ _id: roomId})
+        .then(result => {
+          if (result.deletedCount > 0) {
+              res.json({message:"deleted successfully"})
+          } else {
+            res.json({message:"please check the id you enter"})
+        }
+        })
+        .catch(error => console.log(error));
+       
+          
+
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+module.exports.updateRoom= async(req,res,next)=>{
+    try{
+
+        const {id}=req.params
+       
+        const room =await Room.findByIdAndUpdate(id,{$set:{...req.body}},{new:true})
+        if(req.files){
+            let path=''
+            req.files.forEach(function(files,index,arr){
+                path=path+files.path+','
+            })
+            path=path.substring(0,path.lastIndexOf(","))
+            room.imgs=path
+        } 
+        room.save()
+
+        if(room){
+            res.json({message:"successfully updated"})
+        }
+        else{
+            res.json({message:"check the id you enter"})
+
+        }
+   
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
 
