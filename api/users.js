@@ -67,8 +67,7 @@ app.post('/photo',upload.array('imgs[]'),(req,res)=>{
     const{name,...other}=req.body
     console.log(other)
     const photo=new messageModel({
-        name,
-        other
+      ...req.body
      })
  
 
