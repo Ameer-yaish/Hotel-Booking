@@ -10,6 +10,8 @@ const room = require('../models/room')
 const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
 const reservationModel=require('../models/reservation')
+const { getUserId } = require('./users')
+const jwt=require('jsonwebtoken')
 
 const rate = (rating) => {
     const count = {};
@@ -307,8 +309,25 @@ module.exports.getRoomsByType= async(req,res,next)=>{
 
 module.exports.updateRoomAvailability= async(req,res,next)=>{
     try{
-        const choosenRoom=await Room.findByIdAndUpdate(req.params.id,{$push:{unavailableDates:req.body.dates},$inc: {bookingNumber: 1}})
-        // const reservation=await reservationModel.updateMany({roomId: req.params.id,userId:req.params.userId},{$set:{reservationDates:req.body.dates}})
+         const choosenRoom=await Room.findByIdAndUpdate(req.params.id,{$push:{unavailableDates:req.body.dates},$inc: {bookingNumber: 1}})
+        const token= req.cookies.access_token
+        
+        if(!token){
+            return next (createError(401,'You are not authenticated'))
+        }
+        jwt.verify(token,'ameer',(err,decoded)=>{
+            if(err) return next(createError(403,'Token is not valid!'))
+            req.user=decoded;
+            
+        
+          
+           
+        
+            
+        })    
+      
+ const reservation=await reservationModel.findOneAndUpdate({roomId: req.params.id,userId: req.user.id},{$set:{reservationDates:req.body.dates}})
+
 
 
           if(choosenRoom){

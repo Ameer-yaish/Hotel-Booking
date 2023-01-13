@@ -251,74 +251,86 @@ module.exports.getfeedbackNotification= async(req,res,next)=>{
 module.exports.getOwnerReservations= async(req,res,next)=>{
     try{
         const {ownerId}=req.query
-        const arrayOfOwnerReservation=  await reservationModel.find({ownerId: { $eq: ownerId }})
-      
-      const a=  await reservationModel.aggregate([
-        {
-          $project: {
-              _id: 1,
-              ownerId: 1,
-              amount: 1,
-              __v: 1,
-              userId: 1,
-              roomId: 1
-          }
-        },
-        {
-          $lookup: {
-            from: "users",
-            localField: "userId",
-            foreignField: "_id",
-            as: "user"
-          }
-        },
-        {
-          $lookup: {
-            from: "rooms",
-            localField: "roomId",
-            foreignField: "_id",
-            as: "room"
-          }
-        },
-        {
-          $project: {
-            _id: 1,
-            ownerId: 1,
-            amount: 1,
-            __v: 1,
-            user: {
-              $arrayElemAt: ["$user", 0]
+        const a=  await reservationModel.aggregate([
+            {
+                $match: {
+                  ownerId: {$eq: mongoose.Types.ObjectId(ownerId)}
+                }
+              },
+            {
+              $project: {
+                  _id: 1,
+                  ownerId: 1,
+                  amount: 1,
+                  __v: 1,
+                  userId: 1,
+                  roomId: 1,
+                  reservationDates:1
+              }
             },
-            room: {
-              $arrayElemAt: ["$room", 0]
-            }
-          }
-        },
-        {
-          $project: {
-            _id: 1,
-            ownerId: 1,
-            amount: 1,
-            __v: 1,
-            user: {
-              phone: "$user.phone",
-              city: "$user.city",
-              country: "$user.country",
-              email: "$user.email",
-              username: "$user.username",
-              _id: "$user._id"
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "user"
+              }
             },
-            room: {
-              roomNumbers: "$room.roomNumbers",
-              type: "$room.type",
-              price: "$room.price",
-              city: "$room.city",
-              title: "$room.title",
-              _id: "$room._id"
+            {
+              $lookup: {
+                from: "rooms",
+                localField: "roomId",
+                foreignField: "_id",
+                as: "room"
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                ownerId: 1,
+                reservationDates:1,
+                amount: 1,
+                __v: 1,
+                user: {
+                  $arrayElemAt: ["$user", 0]
+                },
+                room: {
+                  $arrayElemAt: ["$room", 0]
+                }
+              }
+            },
+            {
+              $project: {
+                _id: 1,
+                ownerId: 1,
+                amount: 1,
+                reservationDates:1,
+                __v: 1,
+                user: {
+                  phone: "$user.phone",
+                  city: "$user.city",
+                  country: "$user.country",
+                  email: "$user.email",
+                  username: "$user.username",
+                  _id: "$user._id"
+                },
+                room: {
+                  roomNumbers: "$room.roomNumbers",
+                  type: "$room.type",
+                  price: "$room.price",
+                  city: "$room.city",
+                  title: "$room.title",
+                  _id: "$room._id"
+                }
+              }
+            },
+            {
+              $addFields: {
+                reservationDates: "$reservationDates"
+              }
             }
-          }
-        }
-      ])
+          ])
+        
       
       
           
@@ -681,4 +693,5 @@ module.exports.updateRoom= async(req,res,next)=>{
         next(err)    }
 
 }
+
 
