@@ -11,6 +11,10 @@ const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
 const reservationModel=require('../models/reservation')
 const { getUserId } = require('./users')
+const moviesModel = require('../models/movies')
+const userssModel=require('../models/userss')
+const math = require('mathjs');
+
 const jwt=require('jsonwebtoken')
 
 const rate = (rating) => {
@@ -747,9 +751,71 @@ module.exports.getRecommendRooms= async(req,res,next)=>{
     try{
      const rooms=await Room.find({},{averageRating:1,imgs:1,city:1,title:1,price:1,type:1,})
      res.json({Rooms:rooms})
+  
 
-        
-        
+
+        // // Create a map to associate each genre with a numeric value
+        // const genresMap = {
+        //     "Drama": 1,
+        //     "Crime": 2,
+        //     "Thriller": 3,
+        //     "Action": 4,
+        //     "Adventure": 5,
+        //     "Fantasy": 6
+        // };
+
+        // // Get user's preferred genres and ratings from the database
+        // const user = await userssModel.findOne({ _id: mongoose.Types.ObjectId("63c196ce61e8a7ea90ffc394") });
+        // const userGenres = user.preferredGenres.map(genre => genresMap[genre]);
+        // const userRatings = user.ratings;
+
+        // // Find all movies in the database
+        // const movies = await moviesModel.find()
+
+        // // Create an empty array to store the dot product values
+        // const dotProducts = [];
+
+        // // Calculate the dot product between the user's preferred genres and the genres of each movie
+        // movies.forEach(movie => {
+        //     // filter the genres of the movie to keep only the ones that the user is interested in
+        //     const movieGenres = movie.genres
+        //         .filter(genre => userGenres.indexOf(genresMap[genre]) !== -1)
+        //         .map(genre => genresMap[genre]);
+        //     if (!movieGenres.length) return; // handle missing data
+        //     const dotProduct = movieGenres.length === userGenres.length ? math.dot(userGenres, movieGenres) : 0;
+
+             
+
+        //     // Assign a weight to each movie based on the user's rating
+        //     const weight = userRatings[movie._id] || 0;
+        //     dotProducts.push({
+        //         movieId: movie._id,
+        //         dotProduct: dotProduct * weight
+        //     });
+        // });
+
+        // // Sort the movies by their dot product values
+        // dotProducts.sort((a, b) => b.dotProduct - a.dotProduct);
+
+        //    // Normalize the dot product values
+        //    const maxDotProduct = dotProducts[0].dotProduct;
+        //    const minDotProduct = dotProducts[dotProducts.length - 1].dotProduct;
+        //    dotProducts.forEach(product => {
+        //        product.dotProduct = (product.dotProduct - minDotProduct) / (maxDotProduct - minDotProduct);
+        //    });
+   
+        //    // Sort the movies by their normalized dot product values
+        //    dotProducts.sort((a, b) => b.dotProduct - a.dotProduct);
+   
+        //    // Return the top recommendations to the user
+        //    const recommendations = dotProducts.slice(0, 10).map(product => product.movieId);
+        //    res.send(recommendations);
+   
+
+
+
+
+
     }
     catch(err){
         next(err)    }
