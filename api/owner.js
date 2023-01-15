@@ -1,4 +1,4 @@
-const { getAllCities, getSeriesNames, getAllFeatures, getHotelsName, getHotelsAndSeries, getHotelInformation, getRoom, addNewRoomNumber, getPlace, getSeriesInformation, getOwnerInformation, addfeedbackNotification, getfeedbackNotification, getOwnerReservations, getOwnerMainPageInformation, deleteReservation, deleteUser, deleteHotel, updateHotel, deleteRoom, updateRoom } = require("../services/owner")
+const { getAllCities, getSeriesNames, getAllFeatures, getHotelsName, getHotelsAndSeries, getHotelInformation, getRoom, addNewRoomNumber, getPlace, getSeriesInformation, getOwnerInformation, addfeedbackNotification, getfeedbackNotification, getOwnerReservations, getOwnerMainPageInformation, deleteReservation, deleteUser, deleteHotel, updateHotel, deleteRoom, updateRoom, sendAcceptEmail } = require("../services/owner")
 const { sendNotification } = require("../services/push-notification")
 const upload = require("../middleware/upload")
 
@@ -18,6 +18,8 @@ const app=require("express").Router()
  app.get('/getOwnerInformation/:id',getOwnerInformation)
  app.post('/notification/',sendNotification)
  app.post('/feedbackNotification/',addfeedbackNotification)
+ app.post('/sendAcceptEmail/',sendAcceptEmail)
+
  app.get('/feedbackNotification/',getfeedbackNotification)
  app.get('/reservations/',getOwnerReservations)
  app.get('/OwnerMainPageInformation/',getOwnerMainPageInformation)

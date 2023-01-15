@@ -410,7 +410,7 @@ module.exports.getHelpTopicQuestions= async(req,res,next)=>{
 }
 
 
-module.exports.deletehelpTopic= async(req,res,next)=>{
+module.exports.deletehelpQuestion= async(req,res,next)=>{
     try{
        const {topicId,questionId}=req.query
      

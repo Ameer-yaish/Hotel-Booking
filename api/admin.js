@@ -1,5 +1,5 @@
 const upload = require("../middleware/upload")
-const { addCategories, addHotelType,getAllCities, addCity, addHelpTopic, addHelpQuestion, getHelpTopics, getHelpQuestions, addFeature, getUsersCount, getUsersAndOwners, makeOwner, deleteCategory, getHotelTypes, deleteHotelType, deleteCity, deleteFeature, deletehelpTopic, getHelpTopicQuestions, getTopDestination } = require("../services/admin")
+const { addCategories, addHotelType,getAllCities, addCity, addHelpTopic, addHelpQuestion, getHelpTopics, getHelpQuestions, addFeature, getUsersCount, getUsersAndOwners, makeOwner, deleteCategory, getHotelTypes, deleteHotelType, deleteCity, deleteFeature, deletehelpTopic, getHelpTopicQuestions, getTopDestination,deletehelpQuestion } = require("../services/admin")
 const { deleteUser } = require("../services/admin")
 const { verifyToken, verifyAdmin } = require("../utils/verifyToken")
 
@@ -26,7 +26,7 @@ app.delete('/hotelType/:id',deleteHotelType)
 app.delete('/city/:id',deleteCity)
 app.delete('/feature/:id',deleteFeature)
 app.delete('/helpTopic/:id',deletehelpTopic)
-app.delete('/question',deletehelpTopic)
+app.delete('/question',deletehelpQuestion)
 app.delete('/Categories/:id',deleteCategory)
 app.delete('/user/',deleteUser)
 module.exports=app

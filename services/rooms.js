@@ -753,64 +753,49 @@ module.exports.getRecommendRooms= async(req,res,next)=>{
      res.json({Rooms:rooms})
   
 
+     
 
-        // // Create a map to associate each genre with a numeric value
-        // const genresMap = {
-        //     "Drama": 1,
-        //     "Crime": 2,
-        //     "Thriller": 3,
-        //     "Action": 4,
-        //     "Adventure": 5,
-        //     "Fantasy": 6
-        // };
+    // const userId = req.query.userId;
 
-        // // Get user's preferred genres and ratings from the database
-        // const user = await userssModel.findOne({ _id: mongoose.Types.ObjectId("63c196ce61e8a7ea90ffc394") });
-        // const userGenres = user.preferredGenres.map(genre => genresMap[genre]);
-        // const userRatings = user.ratings;
+    // // Find the user in the database
+    // const user = await userssModel.findOne({ _id: mongoose.Types.ObjectId("63c196ce61e8a7ea90ffc394") });
+    // if (!user) return res.status(404).send("User not found");
 
-        // // Find all movies in the database
-        // const movies = await moviesModel.find()
+    // // Get the user's ratings
+    // const userRatings = user.ratings;
 
-        // // Create an empty array to store the dot product values
-        // const dotProducts = [];
+    // // Find all movies in the database
+    // const movies = await moviesModel.find();
 
-        // // Calculate the dot product between the user's preferred genres and the genres of each movie
-        // movies.forEach(movie => {
-        //     // filter the genres of the movie to keep only the ones that the user is interested in
-        //     const movieGenres = movie.genres
-        //         .filter(genre => userGenres.indexOf(genresMap[genre]) !== -1)
-        //         .map(genre => genresMap[genre]);
-        //     if (!movieGenres.length) return; // handle missing data
-        //     const dotProduct = movieGenres.length === userGenres.length ? math.dot(userGenres, movieGenres) : 0;
+    // // Create an empty array to store the cosine similarity values
+    // const similarities = [];
 
-             
+    // // Calculate the cosine similarity between the user's ratings and the features of each movie
+    // movies.forEach(movie => {
+    //     if (!userRatings[movie._id]) return; // handle missing data
 
-        //     // Assign a weight to each movie based on the user's rating
-        //     const weight = userRatings[movie._id] || 0;
-        //     dotProducts.push({
-        //         movieId: movie._id,
-        //         dotProduct: dotProduct * weight
-        //     });
-        // });
+    //     // Get the user's rating vector and movie's feature vector
+    //     const userVector = math.matrix(userRatings[movie._id]);
+    //     console.log(userVector)
+    //     const movieVector = math.matrix(movie.genres);
+    //     console.log(movieVector)
+    //     // Calculate the cosine similarity
+    //     const cosineSimilarity = math.divide(math.dot(userVector, movieVector), 
+    //                                         math.multiply(math.norm(userVector), math.norm(movieVector)));
 
-        // // Sort the movies by their dot product values
-        // dotProducts.sort((a, b) => b.dotProduct - a.dotProduct);
+    //     // Add the movie and cosine similarity to the similarities array
+    //     similarities.push({
+    //         movieId: movie._id,
+    //         similarity: cosineSimilarity
+    //     });
+    // });
 
-        //    // Normalize the dot product values
-        //    const maxDotProduct = dotProducts[0].dotProduct;
-        //    const minDotProduct = dotProducts[dotProducts.length - 1].dotProduct;
-        //    dotProducts.forEach(product => {
-        //        product.dotProduct = (product.dotProduct - minDotProduct) / (maxDotProduct - minDotProduct);
-        //    });
-   
-        //    // Sort the movies by their normalized dot product values
-        //    dotProducts.sort((a, b) => b.dotProduct - a.dotProduct);
-   
-        //    // Return the top recommendations to the user
-        //    const recommendations = dotProducts.slice(0, 10).map(product => product.movieId);
-        //    res.send(recommendations);
-   
+    // // Sort the movies by their cosine similarity values
+    // similarities.sort((a, b) => b.similarity - a.similarity);
+
+    // // Return the top recommendations to the user
+    // const recommendations = similarities.slice(0, 10).map(product => product.movieId);
+    // res.send(recommendations);
 
 
 

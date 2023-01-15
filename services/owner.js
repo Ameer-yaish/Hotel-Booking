@@ -9,7 +9,18 @@ const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
 const reservationModel = require('../models/reservation')
 const mongoose=require('mongoose')
+const nodemailer=require('nodemailer');
 
+const transporter =nodemailer.createTransport({
+    service:'gmail',
+    auth:{
+        user:'ameeryaish47@gmail.com',
+        pass:"zaypeprjporibuxm"
+    },
+    tls:{
+        rejectUnauthorized:false
+    }
+})
 module.exports.getAllCities= async(req,res,next)=>{
     try{
 
@@ -680,6 +691,48 @@ module.exports.updateRoom= async(req,res,next)=>{
 
         }
    
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
+
+
+
+module.exports.sendAcceptEmail= async(req,res,next)=>{
+    try{
+        const {roomId,email}=req.body
+        const room=await Room.findById(roomId)
+
+
+        let mailOption={
+            from:"ameeryaish47@gmail.com",
+            to:email,
+            subject:'TravelMate  -Your Resarvaton Request',
+            html:`<h2> Thanks for choosing  our app</h2>
+            <h4>${room.title} لقد وافق المالك على حجزك </h4>
+            ` 
+        }
+
+        transporter.sendMail(mailOption,function(err,info){
+            if(err){
+                res.json({message:err})
+            }
+            else{
+                res.json({message:"The reservation accept email sent successfuly to the user"})
+            }
+        })
+
+       
+
           
         
 

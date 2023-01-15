@@ -91,6 +91,11 @@ const mongoose=require('mongoose')
     address:{
         type:{longitude:Number,latitude:Number}
     },
+
+    ratings:{
+        type:{}
+    },
+    
     userLocation:{
         type:{longitude:Number,latitude:Number}
     }
