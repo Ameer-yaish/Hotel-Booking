@@ -485,3 +485,33 @@ module.exports.deleteUser= async(req,res,next)=>{
         next(err)    }
 
 }
+
+module.exports.deleteTopDestination= async(req,res,next)=>{
+    try{
+
+        const {id}=req.params
+        await topDestinationModel.deleteOne({ _id: id})
+        .then(result => {
+          if (result.deletedCount > 0) {
+              res.json({message:"deleted successfully"})
+          } else {
+            res.json({message:"please check the id you enter"})
+        }
+        })
+        .catch(error => console.log(error));
+       
+          
+
+          
+        
+
+
+     
+
+       
+        
+    }
+    catch(err){
+        next(err)    }
+
+}
