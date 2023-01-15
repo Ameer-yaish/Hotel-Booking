@@ -92,9 +92,8 @@ const mongoose=require('mongoose')
         type:{longitude:Number,latitude:Number}
     },
 
-    ratings:{
-        type:{}
-    },
+    ratings: [{ roomId: String, rating: Number }],
+
     
     userLocation:{
         type:{longitude:Number,latitude:Number}

@@ -11,8 +11,6 @@ const featuresModel = require('../models/feature')
 const feedbackModel = require('../models/feedbackNotification')
 const reservationModel=require('../models/reservation')
 const { getUserId } = require('./users')
-const moviesModel = require('../models/movies')
-const userssModel=require('../models/userss')
 const math = require('mathjs');
 
 const jwt=require('jsonwebtoken')
@@ -749,53 +747,137 @@ module.exports.getOffers= async(req,res,next)=>{
 
 module.exports.getRecommendRooms= async(req,res,next)=>{
     try{
-     const rooms=await Room.find({},{averageRating:1,imgs:1,city:1,title:1,price:1,type:1,})
-     res.json({Rooms:rooms})
+    
+
+    const user = await userModel.findById("63bc4b544adc57da5485eb3b");
+    const ratings = user.ratings; 
+    
+  let movieIds=[]
+
+     const userRatingsMatrix = {};
+    ratings.forEach(rating => {
+        userRatingsMatrix[rating.roomId] = rating.rating;
+        movieIds.push(rating.roomId)
+    });
+
   
+    
+const objectIds = movieIds.map(id => mongoose.Types.ObjectId(id));
+const movies = await Room.find({ _id: { $in: objectIds } });
+   
+    // Create the movies matrix with all values set to 0
+    const moviesMatrix = {};
+    const genres = new Set();
+    //iterating through all the movies
+    movies.forEach(movie => {
+        movie.category.forEach(genre => {
+            genres.add(genre);
+            if (!moviesMatrix[genre]) {
+                moviesMatrix[genre] = {};
+            }
+            moviesMatrix[genre][movie._id] = 1;
+        });
+    });
+    
+    // iterating through all the genres
+    Array.from(genres).forEach(genre => {
+        // Find all the movies in the database
+        movies.forEach(movie => {
+            if (!moviesMatrix[genre].hasOwnProperty(movie._id)) {
+                moviesMatrix[genre][movie._id] = 0;
+            }
+        });
+    });
 
-     
+    const weightedGenreMatrix = {};
 
-    // const userId = req.query.userId;
+    Object.keys(moviesMatrix).forEach(genre => {
+        weightedGenreMatrix[genre] = 0;
+        Object.keys(userRatingsMatrix).forEach(movieId => {
+            if (moviesMatrix[genre][movieId]) {
+                weightedGenreMatrix[genre] += userRatingsMatrix[movieId] * moviesMatrix[genre][movieId];
+            }
+        });
+    });
+    const normalize = (matrix) => {
+        const sum = Object.values(matrix).reduce((acc, val) => acc + val, 0);
+        return Object.keys(matrix).map(genre => {
+            return { genre: genre, value: matrix[genre] / sum };
+        });
+    }
+    const normalizedWeightedGenreMatrix = normalize(weightedGenreMatrix);
+    // console.log(normalizedWeightedGenreMatrix);
+    
 
-    // // Find the user in the database
-    // const user = await userssModel.findOne({ _id: mongoose.Types.ObjectId("63c196ce61e8a7ea90ffc394") });
-    // if (!user) return res.status(404).send("User not found");
+    const allMovies = await Room.find({ _id: { $nin: objectIds } });
 
-    // // Get the user's ratings
-    // const userRatings = user.ratings;
+    
 
-    // // Find all movies in the database
-    // const movies = await moviesModel.find();
 
-    // // Create an empty array to store the cosine similarity values
-    // const similarities = [];
+    const allMoviesMatrix = {};
+   
+    //iterating through all the movies
+    allMovies.forEach(movie => {
+        movie.category.forEach(genre => {
+           if(genres.has(genre))
+           {
+            if (!allMoviesMatrix[genre]) {
+                allMoviesMatrix[genre] = {};
+            }
+            allMoviesMatrix[genre][movie._id] = 1;
 
-    // // Calculate the cosine similarity between the user's ratings and the features of each movie
-    // movies.forEach(movie => {
-    //     if (!userRatings[movie._id]) return; // handle missing data
 
-    //     // Get the user's rating vector and movie's feature vector
-    //     const userVector = math.matrix(userRatings[movie._id]);
-    //     console.log(userVector)
-    //     const movieVector = math.matrix(movie.genres);
-    //     console.log(movieVector)
-    //     // Calculate the cosine similarity
-    //     const cosineSimilarity = math.divide(math.dot(userVector, movieVector), 
-    //                                         math.multiply(math.norm(userVector), math.norm(movieVector)));
+           } 
+            
+        });
+    });
 
-    //     // Add the movie and cosine similarity to the similarities array
-    //     similarities.push({
-    //         movieId: movie._id,
-    //         similarity: cosineSimilarity
-    //     });
-    // });
+// iterating through all the genres
+Array.from(genres).forEach(genre => {
+    // Find all the movies in the database
+    allMovies.forEach(movie => {
+        if (!allMoviesMatrix[genre].hasOwnProperty(movie._id)) {
+            allMoviesMatrix[genre][movie._id] = 0;
+        }
+    });
+});
 
-    // // Sort the movies by their cosine similarity values
-    // similarities.sort((a, b) => b.similarity - a.similarity);
 
-    // // Return the top recommendations to the user
-    // const recommendations = similarities.slice(0, 10).map(product => product.movieId);
-    // res.send(recommendations);
+const multipliedMatrix = {};
+Object.keys(allMoviesMatrix).forEach(genre => {
+    multipliedMatrix[genre] = {};
+    Object.keys(allMoviesMatrix[genre]).forEach(movieId => {
+        const normalizeValue = normalizedWeightedGenreMatrix.find(val => val.genre === genre);
+        multipliedMatrix[genre][movieId] = allMoviesMatrix[genre][movieId] * normalizeValue.value;
+    });
+});
+
+
+
+const movieScores = {};
+Object.keys(multipliedMatrix).forEach(genre => {
+    Object.keys(multipliedMatrix[genre]).forEach(movieId => {
+        if (!movieScores[movieId]) {
+            movieScores[movieId] = 0;
+        }
+        movieScores[movieId] += multipliedMatrix[genre][movieId];
+    });
+});
+
+
+
+const sortedMovieScores = Object.entries(movieScores).sort((a, b) => b[1] - a[1]);
+const topRecommendations = sortedMovieScores.slice(0, 10);
+
+const topRecommendationsMovies = await Room.find({
+    _id: { $in: topRecommendations.map(score => score[0]) }
+},{averageRating:1,imgs:1,city:1,title:1,price:1,type:1,});
+res.json({Rooms:topRecommendationsMovies})
+
+
+
+
+
 
 
 
