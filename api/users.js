@@ -57,6 +57,42 @@ app.put('/userLocation',addUserLocation)
 app.get('/emailVerifiedPage',(req,res)=>{
     res.json("Email verified You Can Sign in now")
 })
+
+app.get('/paymentSuccess', function (req, res) {
+    res.send(`
+        <html>
+            <head>
+                <title>Payment Success</title>
+                <style>
+                    body {
+                        background-color: #F5F5F5;
+                        font-family: Arial, sans-serif;
+                    }
+                    .container {
+                        width: 80%;
+                        margin: 0 auto;
+                        text-align: center;
+                    }
+                    h1 {
+                        color: #00A859;
+                        margin-top: 100px;
+                    }
+                    p {
+                        font-size: 20px;
+                        margin-top: 50px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>Payment Success</h1>
+                    <p>Thank you for your payment!</p>
+                </div>
+            </body>
+        </html>
+    `);
+});
+
 app.delete('/deleteUser/:id',verifyUser,deleteUser)
 
 

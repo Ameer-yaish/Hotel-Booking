@@ -537,7 +537,15 @@ module.exports.getOwnerMainPageInformation= async(req,res,next)=>{
       
 
         
-
+       if (!lastMonthProfit) {
+        lastMonthProfit = 0;
+    }
+    if (!lastTwoMonthProfit) {
+        lastTwoMonthProfit = 0;
+    }
+    if (!lastThreeProfit) {
+        lastThreeProfit = 0;
+    }
 
 
      

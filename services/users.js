@@ -735,7 +735,7 @@ module.exports.executePaymant= async(req,res,next)=>{
 
 
 
-        res.redirect("https://www.sandbox.paypal.com/cgi-bin/webscr?cmd=_express-checkout&token=EC-9E155724U4002970B#/checkout/genericError?code=UEFZTUVOVF9BTFJFQURZX0RPTkU%3D")
+        res.redirect("https://hotel-booking-8qw1.onrender.com/api/users/paymentSuccess")
 
 
        
