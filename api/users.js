@@ -55,7 +55,38 @@ app.put('/coordinates',addAutoSearchCoordinates)
 app.put('/userLocation',addUserLocation)
 
 app.get('/emailVerifiedPage',(req,res)=>{
-    res.json("Email verified You Can Sign in now")
+    res.send(`
+    <html>
+        <head>
+            <title>Email verified You Can Sign in now</title>
+            <style>
+                body {
+                    background-color: #F5F5F5;
+                    font-family: Arial, sans-serif;
+                }
+                .container {
+                    width: 80%;
+                    margin: 0 auto;
+                    text-align: center;
+                }
+                h1 {
+                    color: #00A859;
+                    margin-top: 100px;
+                }
+                p {
+                    font-size: 20px;
+                    margin-top: 50px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Email verified You Can Sign in now</h1>
+                <p>Thank you for your Regiestration!</p>
+            </div>
+        </body>
+    </html>
+`);
 })
 
 app.get('/paymentSuccess', function (req, res) {
