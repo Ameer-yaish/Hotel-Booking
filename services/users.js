@@ -834,30 +834,30 @@ module.exports.Roompay= async(req,res,next)=>{
 module.exports.savePayment= async(req,res,next)=>{
    
     try{
-       const  {userId,roomId,paymentId,PayerID,price}=req.query
-       console.log(price)
-        await paymentModel.insertMany({userId,roomId,paymentId,PayerID,price})
+    //    const  {userId,roomId,paymentId,PayerID,price}=req.query
+    //    console.log(price)
+    //     await paymentModel.insertMany({userId,roomId,paymentId,PayerID,price})
         
-        const hotels=await hotelModel.find({})
+    //     const hotels=await hotelModel.find({})
 
-        let hotelId
-        await Promise.all(hotels.map(hotel=>{
-            hotel.rooms.map(room=>{
-                if(room.equals(roomId)){
+    //     let hotelId
+    //     await Promise.all(hotels.map(hotel=>{
+    //         hotel.rooms.map(room=>{
+    //             if(room.equals(roomId)){
                   
-                  hotelId= hotel._id
-                }
+    //               hotelId= hotel._id
+    //             }
   
-            })
+    //         })
   
-        }))
+    //     }))
 
-                const hotel=await hotelModel.findById(hotelId)
+    //             const hotel=await hotelModel.findById(hotelId)
               
 
 
 
-        const reservation=await reservationModel.insertMany({userId:req.query.userId,roomId:req.query.roomId,amount:req.query.price,ownerId:hotel.userId})
+    //     const reservation=await reservationModel.insertMany({userId:req.query.userId,roomId:req.query.roomId,amount:req.query.price,ownerId:hotel.userId})
 
         res.send(`
         <html>
